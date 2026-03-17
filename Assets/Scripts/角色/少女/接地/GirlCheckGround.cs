@@ -7,6 +7,7 @@ public class GirlCheckGround : GroundCheckBaseController
     public override void WhenIsGround()
     {
         girlData.SetCurrentJumpCount(0);
+        girlData.SetCurrentYVelocity(0f);
     }
 
     public override void WhenIsNotGround()

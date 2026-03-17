@@ -30,6 +30,11 @@ public enum GirlStateType
     /// 跳跃落地状态
     /// </summary>
     JumpLand,
+
+    /// <summary>
+    /// 地面攻击状态
+    /// </summary>
+    LandAttackMachine,
 }
 
 public enum JumpUpType
@@ -43,3 +48,25 @@ public enum JumpUpType
     /// </summary>
     Jump_Up,
 }
+
+public enum LandAttackType
+{
+    LandAttack_Enter,
+    /// <summary>
+    /// 地面攻击招式1起手状态
+    /// </summary>
+    LandAttack1_Start,
+
+    /// <summary>
+    /// 地面攻击招式1攻击
+    /// </summary>
+    LandAttack1_Attack,
+
+    /// <summary>
+    /// 地面攻击招式1结束状态
+    /// </summary>
+    LandAttack1_End,
+
+}
+
+

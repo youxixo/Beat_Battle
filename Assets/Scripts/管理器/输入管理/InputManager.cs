@@ -4,12 +4,12 @@ using UnityEngine;
 public class InputManager : Singleton<InputManager>
 {
     #region WASD
-    [SerializeField]private Vector2 MoveDirection = Vector2.zero;
+    [SerializeField]private Vector3 MoveDirection = Vector3.zero;
     
     /// <summary>
     /// 获取玩家的移动方向，使用WASD键控制。
     /// </summary>
-    public Vector2 GetMoveDirection
+    public Vector3 GetMoveDirection
     {
         get { return MoveDirection.normalized; }
     }
@@ -20,8 +20,9 @@ public class InputManager : Singleton<InputManager>
     /// <param name="moveDirection">玩家的移动方向，通常是WASD键的输入值。</param>
     public void SetMoveDirection(Vector2 moveDirection)
     {
-        MoveDirection = moveDirection;
+        MoveDirection = new Vector3(moveDirection.x, 0, moveDirection.y);
     }
+
     #endregion
 
     #region 攻击键
