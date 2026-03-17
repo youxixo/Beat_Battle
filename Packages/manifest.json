@@ -3,6 +3,8 @@
     "com.inspiaaa.unityhfsm": "https://github.com/Inspiaaa/UnityHFSM.git#upm",
     "com.unity.ai.navigation": "2.0.11",
     "com.unity.burst": "1.8.28",
+    "com.unity.charactercontroller": "1.4.2",
+    "com.unity.cinemachine": "3.1.6",
     "com.unity.collab-proxy": "2.11.4",
     "com.unity.collections": "2.6.2",
     "com.unity.editorcoroutines": "1.0.1",
