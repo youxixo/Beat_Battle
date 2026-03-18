@@ -78,4 +78,13 @@ public class InputController : MonoBehaviour
         }
     }
     
+    public void OnDodge(InputAction.CallbackContext context)
+    {
+        bool dodgeInputWindow = inputManager.GetDodgeInputWindow;
+
+        if (context.performed && dodgeInputWindow)
+        {
+            inputManager.DodgeEvent?.Invoke();
+        }
+    }
 }

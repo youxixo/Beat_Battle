@@ -134,4 +134,33 @@ public class InputManager : Singleton<InputManager>
 
     #endregion
 
+    #region 闪避键
+    /// <summary>
+    /// 闪避键输入事件，通常由输入系统调用，当玩家按下闪避键时触发，执行闪避逻辑。
+    /// </summary>
+    public Action DodgeEvent;
+
+    /// <summary>
+    /// 闪避键输入窗口
+    /// </summary>
+    [SerializeField]private bool DodgeInputWindow = true;
+
+    /// <summary>
+    /// 获取闪避键输入窗口状态
+    /// </summary>
+    public bool GetDodgeInputWindow
+    {
+        get { return DodgeInputWindow; }
+    }
+
+    /// <summary>
+    /// 设置闪避键输入窗口，通常由输入系统调用，当玩家按下闪
+    /// </summary>
+    /// <param name="isOpen">闪避键输入窗口状态</param>
+    public void SetDodgeInputWindow(bool isOpen)
+    {
+        DodgeInputWindow = isOpen;
+    }
+    #endregion
+
 }

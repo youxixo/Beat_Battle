@@ -48,7 +48,16 @@ public class Girl_Data : MonoBehaviour
     }
     #endregion
 
+    #region 闪避属性
+    [Header("闪避属性")]
+    [SerializeField] private float dodgeDistance = 5f;
+    public float GetDodgeDistance => dodgeDistance;
+    #endregion
+
     #region 地面攻击属性
+    [Header("地面攻击属性")]
+    [SerializeField] private float landAttackMoveSpeed = 3f;
+    public float GetLandAttackMoveSpeed => landAttackMoveSpeed;
     [SerializeField] private bool IsLandAttacking = false;
     /// <summary>
     /// 获取当前是否处于地面攻击状态

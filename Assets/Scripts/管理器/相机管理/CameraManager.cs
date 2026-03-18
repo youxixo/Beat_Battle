@@ -58,10 +58,7 @@ public class CameraManager : Singleton<CameraManager>
             case CameraType.BattleCamera:
                 if(CurrentCamera == BattleCamera_Left || CurrentCamera == BattleCamera_Right) return; // 如果当前已经是战斗摄像机，则不切换
                 CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
-                // 计算角色和两个战斗摄像机的距离，选择较近的一个
-                float distanceToLeft = Vector3.Distance(currentCharacterData.transform.position, BattleCamera_Left.transform.position);
-                float distanceToRight = Vector3.Distance(currentCharacterData.transform.position, BattleCamera_Right.transform.position);
-                if (distanceToLeft < distanceToRight)
+                if(EnemyInLeft())
                 {
                     CurrentCamera = BattleCamera_Left;
                 }
@@ -75,7 +72,13 @@ public class CameraManager : Singleton<CameraManager>
         CurrentCamera.Priority = 20;
     }
 
-    
+    private bool EnemyInLeft()
+    {
+        Vector3 CharacterPos = CharacterManager.Instance.GetCurrentCharacterData.transform.position;
+        Vector3 CharacterForward = CharacterManager.Instance.GetCurrentCharacterData.transform.forward;
+        Vector3 EnemyPos = EnemyManager.Instance.currentTargetEnemy.position;
 
+        return Tool.IsLeft(EnemyPos, CharacterPos, CharacterForward);
+    }
     
 }

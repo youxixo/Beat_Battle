@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LandAttack_Start : CharacterState<LandAttackType>
@@ -43,15 +44,17 @@ public class LandAttack_Start : CharacterState<LandAttackType>
     public override void OnEnter()
     {
         base.OnEnter();
+
         girlData.SetIsLandAttacking(true);
-        
+
         inputManager.SetAttackInputWindow(false);
         inputManager.SetMoveInputWindow(false);
-        inputManager.AttackExpire = false; // 重置攻击输入保质期
+        inputManager.AttackExpire = false;
 
         MoveDistanceToEnemy = 0f;
         girlData.NextLandAttackType = NextLandAttackType;
 
+        // ===== 计算方向 =====
         if (enemyManager.currentTargetEnemy)
         {
             Vector3 dir = enemyManager.currentTargetEnemy.transform.position - characterController.transform.position;
@@ -60,7 +63,9 @@ public class LandAttack_Start : CharacterState<LandAttackType>
             float distance = dir.magnitude;
 
             moveDirection = dir.normalized;
-            characterController.transform.rotation = Quaternion.LookRotation(moveDirection);
+
+            if (moveDirection.sqrMagnitude > 0.001f)
+                characterController.transform.rotation = Quaternion.LookRotation(moveDirection);
 
             if (distance > AttackRadius)
             {
@@ -74,8 +79,7 @@ public class LandAttack_Start : CharacterState<LandAttackType>
 
         animator.Play(AttackAnimationHash);
 
-        float animLength = AnimatorTool.GetRealAnimationLength(animator, AttackAnimationHash);
-        moveSpeed = MoveDistanceToEnemy / Mathf.Max(animLength - 0.05f, 0.01f);
+        coroutineManager.Run("LandAttack_Start_Init_" + AttackAnimationHash, InitAfterAnimStart());
 
         cameraManager.SwitchCamera(CameraType.BattleCamera);
     }
@@ -84,20 +88,29 @@ public class LandAttack_Start : CharacterState<LandAttackType>
     {
         base.OnLogic();
 
-        // ✅ 每帧判断动画是否结束
+        // =========================
+        // ✅ 动画结束判断
+        // =========================
         animationFinished = AnimatorTool.IsAnimationFinished_FullPath(animator, AttackAnimationHash);
 
-        // ✅ 移动
+        // =========================
+        // ✅ 移动（带剩余距离保护）
+        // =========================
         if (MoveDistanceToEnemy > 0f && !animationFinished)
         {
             float deltaMove = moveSpeed * Time.deltaTime;
+
+            // 防止越界（最后一帧抖动）
+            deltaMove = Mathf.Min(deltaMove, MoveDistanceToEnemy);
 
             characterController.Move(moveDirection * deltaMove);
 
             MoveDistanceToEnemy -= deltaMove;
         }
 
-        // ✅ 锁敌旋转（每帧）
+        // =========================
+        // ✅ 锁敌旋转（平滑）
+        // =========================
         if (enemyManager.currentTargetEnemy)
         {
             Vector3 dir = enemyManager.currentTargetEnemy.transform.position - characterController.transform.position;
@@ -113,7 +126,9 @@ public class LandAttack_Start : CharacterState<LandAttackType>
             }
         }
 
-        // ✅ 退出条件（核心）
+        // =========================
+        // ✅ 退出
+        // =========================
         if (animationFinished)
         {
             fsm.StateCanExit();
@@ -123,14 +138,44 @@ public class LandAttack_Start : CharacterState<LandAttackType>
     public override void OnExit()
     {
         base.OnExit();
+
         girlData.SetIsLandAttacking(false);
 
-        if(inputManager)
+        // ⭐ 必须重置动画速度！
+        animator.speed = 1f;
+
+        if (inputManager)
         {
             inputManager.SetMoveInputWindow(true);
             inputManager.SetAttackInputWindow(true);
-            inputManager.AttackExpire = false; // 重置攻击输入保质期
+            inputManager.AttackExpire = false;
         }
-        
+    }
+
+    IEnumerator InitAfterAnimStart()
+    {
+        yield return null;
+
+        float animLength = AnimatorTool.GetRealAnimationLength(animator, AttackAnimationHash);
+
+        float targetSpeed = girlData.GetLandAttackMoveSpeed;
+
+        if (MoveDistanceToEnemy > 0.01f)
+        {
+            float moveTime = MoveDistanceToEnemy / targetSpeed;
+
+            float animSpeed = animLength / Mathf.Max(moveTime, 0.01f);
+
+            animSpeed = Mathf.Clamp(animSpeed, 0.8f, 1.5f);
+
+            animator.speed = animSpeed;
+
+            moveSpeed = targetSpeed;
+        }
+        else
+        {
+            animator.speed = 1f;
+            moveSpeed = 0f;
+        }
     }
 }

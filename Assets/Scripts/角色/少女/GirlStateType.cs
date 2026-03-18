@@ -32,6 +32,11 @@ public enum GirlStateType
     JumpLand,
 
     /// <summary>
+    /// 地面闪避状态
+    /// </summary>
+    LandDodge,
+
+    /// <summary>
     /// 地面攻击状态
     /// </summary>
     LandAttackMachine,
@@ -53,7 +58,7 @@ public enum LandAttackType
 {
     LandAttack_Enter,
 
-    
+
     /// <summary>
     /// 地面攻击招式1起手状态
     /// </summary>

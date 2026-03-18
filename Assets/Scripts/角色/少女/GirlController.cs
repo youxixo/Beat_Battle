@@ -17,6 +17,10 @@ public class GirlController : MonoBehaviour
     [Header("跑步动画")]
     [SerializeField] private string RunAnimName = "Run";
 
+    [Header("闪避动画")]
+    [SerializeField] private string Dodge_Front_AnimName = "Dodge_Front";
+    [SerializeField] private string Dodge_Back_AnimName = "Dodge_Back";
+
     [Header("跳跃动画")]
     [SerializeField] private string JumpUpAnimName = "JumpUp";
     [SerializeField] private string JumpDownAnimName = "JumpDown";
@@ -79,10 +83,12 @@ public class GirlController : MonoBehaviour
         inputManager.AttackTapEvent += Tap_Attack;
         inputManager.AttackHoldEvent += Hold_Attack;
         inputManager.JumpEvent += Jump;
+        inputManager.DodgeEvent += Dodge;
 
         LandAttackCollider.enabled = false;
         GirlRootStateMachine.Init();
     }
+
 
     void Update()
     {
@@ -93,11 +99,12 @@ public class GirlController : MonoBehaviour
     {
         GirlRootStateMachine.OnExit();
 
-        if (inputManager != null)
+        if (inputManager)
         {
             inputManager.AttackTapEvent -= Tap_Attack;
             inputManager.AttackHoldEvent -= Hold_Attack;
             inputManager.JumpEvent -= Jump;
+            inputManager.DodgeEvent -= Dodge;
         }
     }
 
@@ -105,11 +112,12 @@ public class GirlController : MonoBehaviour
     {
         GirlRootStateMachine.OnExit();
 
-        if (inputManager != null)
+        if (inputManager)
         {
             inputManager.AttackTapEvent -= Tap_Attack;
             inputManager.AttackHoldEvent -= Hold_Attack;
             inputManager.JumpEvent -= Jump;
+            inputManager.DodgeEvent -= Dodge;
         }
     }
 
@@ -123,6 +131,8 @@ public class GirlController : MonoBehaviour
         GirlRootStateMachine.AddState(GirlStateType.JumpDown, new Jump_Down_Girl(girlData, animator, Animator.StringToHash(JumpDownAnimName), characterController));
         GirlRootStateMachine.AddState(GirlStateType.JumpLand, new Jump_Land_Girl(animator, Animator.StringToHash(JumpLandAnimName)));
         GirlRootStateMachine.AddState(GirlStateType.LandAttackMachine, LandAttackStateMachine);
+        GirlRootStateMachine.AddState(GirlStateType.LandDodge, new LandDodge_Girl(animator, characterController, girlData, 
+                                                                    Dodge_Front_AnimName, Dodge_Back_AnimName));
 
         // 待输入状态切换
         GirlRootStateMachine.AddTriggerTransition(InputEvent.Jump, GirlStateType.WaitingInput, GirlStateType.JumpUpMachine,t => girlData.CanJump);
@@ -148,6 +158,9 @@ public class GirlController : MonoBehaviour
                                             t => moveDirection != Vector3.zero, forceInstantly: true);
         GirlRootStateMachine.AddTransition(GirlStateType.JumpLand, GirlStateType.WaitingInput);
 
+        //闪避状态切换
+        GirlRootStateMachine.AddTransition(GirlStateType.LandDodge, GirlStateType.WaitingInput);
+
         //地面攻击状态切换
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, t => !girlData.GetIsLandAttacking);
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, 
@@ -161,10 +174,16 @@ public class GirlController : MonoBehaviour
                                             LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack3_End, forceInstantly: true);
 
         //任意状态切换
+        GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.Dodge, GirlStateType.LandDodge,
+                                            t => isGround && currentState != GirlStateType.LandDodge, forceInstantly: true);
         GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.Jump, GirlStateType.JumpUpMachine, 
                                             t => girlData.CanJump && currentState!= GirlStateType.JumpUpMachine, forceInstantly: true);
         GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.AttackTap, GirlStateType.LandAttackMachine, 
                                             t => isGround && currentState != GirlStateType.LandAttackMachine, forceInstantly: true);
+        GirlRootStateMachine.AddTransitionFromAny(GirlStateType.LandAttackMachine, t=> isGround && 
+                                                                                currentState != GirlStateType.LandAttackMachine &&
+                                                                                inputManager.GetAttackInputWindow&&
+                                                                                inputManager.AttackExpire);
         
         
         GirlRootStateMachine.SetStartState(GirlStateType.WaitingInput);
@@ -186,8 +205,6 @@ public class GirlController : MonoBehaviour
 
     private void Build_LandAttackMachine()
     {
-        LandAttackType nextLandAttack = girlData.NextLandAttackType;
-
         LandAttackStateMachine.AddState(LandAttackType.LandAttack_Enter, new LandAttack_Enter(girlData));
 
         // 地面攻击1状态
@@ -219,11 +236,11 @@ public class GirlController : MonoBehaviour
 
         //转换
         LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack1_Start, 
-                                            t => nextLandAttack == LandAttackType.LandAttack1_Start);
+                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack1_Start);
         LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack2_Start, 
-                                            t => nextLandAttack == LandAttackType.LandAttack2_Start);
+                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack2_Start);
         LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack3_Start, 
-                                            t => nextLandAttack == LandAttackType.LandAttack3_Start);
+                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack3_Start);
 
         //地面攻击1
             // 起手 -> 攻击
@@ -301,6 +318,11 @@ public class GirlController : MonoBehaviour
     void Jump()
     {
         GirlRootStateMachine.Trigger(InputEvent.Jump);
+    }
+
+    void Dodge()
+    {
+        GirlRootStateMachine.Trigger(InputEvent.Dodge);
     }
 
     #if UNITY_EDITOR
