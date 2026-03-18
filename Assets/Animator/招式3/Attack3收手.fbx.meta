@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 0d417b4a58f7cb146b9e44792342f922
+guid: 02c072db69b292c44aa855a87bce1c83
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable:
   - first:
-      74: -441296982555202684
-    second: "Attack1\u524D\u6447"
+      74: -2809026575308471513
+    second: "Attack3\u6536\u624B"
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -23,7 +23,7 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 1
+    importAnimatedCustomProperties: 0
     importConstraints: 0
     animationCompression: 3
     animationRotationError: 0.5
@@ -34,11 +34,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: "Attack1\u524D\u6447"
-      takeName: Katana@Attack1
+      name: "Attack3\u6536\u624B"
+      takeName: Katana@Attack3
       internalID: 0
-      firstFrame: 0
-      lastFrame: 9
+      firstFrame: 41
+      lastFrame: 92
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -197,7 +197,7 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 24
     isReadable: 0
   meshes:
     lODScreenPercentages: []

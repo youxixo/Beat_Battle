@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class InputManager : Singleton<InputManager>
 {
+    private CoroutineManager coroutineManager => CoroutineManager.Instance;
     #region WASD
     [SerializeField]private Vector3 MoveDirection = Vector3.zero;
     
@@ -23,6 +25,21 @@ public class InputManager : Singleton<InputManager>
         MoveDirection = new Vector3(moveDirection.x, 0, moveDirection.y);
     }
 
+    /// <summary>
+    /// 移动输入窗口
+    /// </summary>
+    private bool moveInputWindow = true;
+
+    public bool GetMoveInputWindow
+    {
+        get { return moveInputWindow; }
+    }
+
+    public void SetMoveInputWindow(bool isOpen)
+    {
+        moveInputWindow = isOpen;
+    }
+
     #endregion
 
     #region 攻击键
@@ -35,6 +52,39 @@ public class InputManager : Singleton<InputManager>
     /// 攻击长按事件，通常由输入系统调用，当玩家持续按下攻击键时触发，执行长按攻击逻辑。
     /// </summary>
     public Action AttackHoldEvent;
+
+    ///<summary>
+    /// 攻击键是否在保质期内
+    /// </summary>
+    private bool attackExpire = false;
+
+    /// <summary>
+    /// 攻击输入保质期，通常由输入系统调用，当玩家按下攻击键时设置。
+    /// </summary>
+    public bool AttackExpire
+    {
+        set
+        {
+            if(value)
+            {
+                coroutineManager.Run("AttackExpire", AttackExpireCoroutine());
+            }
+            else
+            {
+                coroutineManager.Stop("AttackExpire");
+            }
+            attackExpire = value;
+        }
+        get { return attackExpire; }
+    }
+
+    IEnumerator AttackExpireCoroutine()
+    {
+        yield return new WaitForSeconds(0.5f); // 攻击输入保质期为0.5秒
+        attackExpire = false;
+    }
+
+
 
     /// <summary>
     /// 攻击键输入窗口

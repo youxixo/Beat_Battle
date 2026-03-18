@@ -52,6 +52,8 @@ public enum JumpUpType
 public enum LandAttackType
 {
     LandAttack_Enter,
+
+    
     /// <summary>
     /// 地面攻击招式1起手状态
     /// </summary>
@@ -67,6 +69,33 @@ public enum LandAttackType
     /// </summary>
     LandAttack1_End,
 
+
+    /// <summary>
+    /// 地面攻击招式2起手状态
+    /// </summary>
+    LandAttack2_Start,
+    /// <summary>
+    /// 地面攻击招式2攻击状态
+    /// </summary>
+    LandAttack2_Attack,
+    /// <summary>
+    /// 地面攻击招式2结束状态
+    /// </summary>
+    LandAttack2_End,
+
+
+    /// <summary>
+    /// 地面攻击招式3起手状态
+    /// </summary>
+    LandAttack3_Start,
+    /// <summary>
+    /// 地面攻击招式3攻击状态
+    /// </summary>
+    LandAttack3_Attack,
+    /// <summary>
+    /// 地面攻击招式3结束状态
+    /// </summary>
+    LandAttack3_End,
 }
 
 

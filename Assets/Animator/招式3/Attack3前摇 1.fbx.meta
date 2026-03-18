@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 0d417b4a58f7cb146b9e44792342f922
+guid: 4eccf5061f0168a4f99ffc77998f75ca
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable:
   - first:
-      74: -441296982555202684
-    second: "Attack1\u524D\u6447"
+      74: -2809026575308471513
+    second: "\0\0\0\0I\0\0\0\x10\0\U001B2E7F"
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -23,7 +23,7 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 1
+    importAnimatedCustomProperties: 0
     importConstraints: 0
     animationCompression: 3
     animationRotationError: 0.5
@@ -34,11 +34,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: "Attack1\u524D\u6447"
-      takeName: Katana@Attack1
+      name: "\x7F\0\0\x1F\x02\0\0\0\0\0\0G\0"
+      takeName: Katana@Attack3
       internalID: 0
-      firstFrame: 0
-      lastFrame: 9
+      firstFrame: 24
+      lastFrame: 31
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -197,7 +197,7 @@ ModelImporter:
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 24
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -710,7 +710,8 @@ ModelImporter:
     - name: spine_03
       parentName: spine_02
       position: {x: -0.09947624, y: -0.00013188123, z: 7.4505804e-11}
-      rotation: {x: 0.0000000037252363, y: 0.0000000012592413, z: -0.00089900004, w: 0.9999996}
+      rotation: {x: 0.0000000037252363, y: 0.0000000012592413, z: -0.00089900004,
+        w: 0.9999996}
       scale: {x: 1, y: 1, z: 1}
     - name: clavicle_l
       parentName: spine_03
@@ -940,7 +941,8 @@ ModelImporter:
     - name: thigh_twist_01_r
       parentName: thigh_r
       position: {x: -0.22478591, y: 0, z: -0.000000047683713}
-      rotation: {x: -0.0000000032341645, y: 0.000000039115548, z: 0.000000032712705, w: 1}
+      rotation: {x: -0.0000000032341645, y: 0.000000039115548, z: 0.000000032712705,
+        w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: calf_r
       parentName: thigh_r
@@ -979,7 +981,8 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: b02f7765ace5dff4a866b767512e4a05, type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: b02f7765ace5dff4a866b767512e4a05,
+    type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1

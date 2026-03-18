@@ -47,13 +47,17 @@ public class CameraManager : Singleton<CameraManager>
     public void SwitchCamera(CameraType cameraType)
     {
         Girl_Data currentCharacterData = CharacterManager.Instance.GetCurrentCharacterData;
-        CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
+        
         switch (cameraType)
         {
             case CameraType.DefaultCamera:
+                if(CurrentCamera == DefaultCamera) return; // 如果当前已经是默认摄像机，则不切换
+                CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
                 CurrentCamera = DefaultCamera;
                 break;
             case CameraType.BattleCamera:
+                if(CurrentCamera == BattleCamera_Left || CurrentCamera == BattleCamera_Right) return; // 如果当前已经是战斗摄像机，则不切换
+                CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
                 // 计算角色和两个战斗摄像机的距离，选择较近的一个
                 float distanceToLeft = Vector3.Distance(currentCharacterData.transform.position, BattleCamera_Left.transform.position);
                 float distanceToRight = Vector3.Distance(currentCharacterData.transform.position, BattleCamera_Right.transform.position);
@@ -70,6 +74,8 @@ public class CameraManager : Singleton<CameraManager>
         // 将新摄像机优先级设置为20，确保它成为当前激活的摄像机
         CurrentCamera.Priority = 20;
     }
+
+    
 
     
 }

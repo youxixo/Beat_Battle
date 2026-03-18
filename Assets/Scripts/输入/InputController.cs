@@ -39,9 +39,13 @@ public class InputController : MonoBehaviour
     {
         bool attackInputWindow = inputManager.GetAttackInputWindow;
         
-        if (context.performed && attackInputWindow)
+        if (context.performed)
         {
-            inputManager.AttackTapEvent?.Invoke();
+            if(attackInputWindow)
+            {
+                inputManager.AttackTapEvent?.Invoke();
+            }
+            inputManager.AttackExpire = true; // 设置攻击输入保质期
         }
     }
 

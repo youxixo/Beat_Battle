@@ -22,12 +22,12 @@ public class Run_Girl : CharacterState<GirlStateType>
     public override void OnEnter()
     {
         base.OnEnter();
+        cameraManager.SwitchCamera(CameraType.DefaultCamera);
 
         moveSpeed = girl_Data.GetMoveSpeed;
         rotateSpeed = girl_Data.GetRotateSpeed;
 
         animator.Play(runHash);
-        Debug.Log("进入奔跑状态");
     }
 
     public override void OnLogic()

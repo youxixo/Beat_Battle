@@ -13,6 +13,10 @@ public enum InputEvent
     /// </summary>
     Jump,
     /// <summary>
+    /// 闪避
+    /// </summary>
+    Dodge,
+    /// <summary>
     /// 交互
     /// </summary>
     Interact,

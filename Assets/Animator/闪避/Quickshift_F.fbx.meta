@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 0d417b4a58f7cb146b9e44792342f922
+guid: 3ba0fc6b20d1ca543a7b7f7fae6fd4c5
 ModelImporter:
-  serializedVersion: 24200
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -441296982555202684
-    second: "Attack1\u524D\u6447"
+      74: 120459418513675320
+    second: Quickshift_F
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -19,11 +19,16 @@ ModelImporter:
     optimizeGameObjects: 0
     removeConstantScaleCurves: 1
     motionNodeName: root
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Katana@Quickshift_F' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'spine_01' has translation animation that
+      will be discarded.\n\t'spine_03' has translation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 1
+    importAnimatedCustomProperties: 0
     importConstraints: 0
     animationCompression: 3
     animationRotationError: 0.5
@@ -34,11 +39,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: "Attack1\u524D\u6447"
-      takeName: Katana@Attack1
+      name: Quickshift_F
+      takeName: Katana@Quickshift_F
       internalID: 0
       firstFrame: 0
-      lastFrame: 9
+      lastFrame: 30
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -206,7 +211,6 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
@@ -224,9 +228,6 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
-    generateMeshLods: 0
-    meshLodGenerationFlags: 0
-    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -237,7 +238,6 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -710,7 +710,8 @@ ModelImporter:
     - name: spine_03
       parentName: spine_02
       position: {x: -0.09947624, y: -0.00013188123, z: 7.4505804e-11}
-      rotation: {x: 0.0000000037252363, y: 0.0000000012592413, z: -0.00089900004, w: 0.9999996}
+      rotation: {x: 0.0000000037252363, y: 0.0000000012592413, z: -0.00089900004,
+        w: 0.9999996}
       scale: {x: 1, y: 1, z: 1}
     - name: clavicle_l
       parentName: spine_03
@@ -940,7 +941,8 @@ ModelImporter:
     - name: thigh_twist_01_r
       parentName: thigh_r
       position: {x: -0.22478591, y: 0, z: -0.000000047683713}
-      rotation: {x: -0.0000000032341645, y: 0.000000039115548, z: 0.000000032712705, w: 1}
+      rotation: {x: -0.0000000032341645, y: 0.000000039115548, z: 0.000000032712705,
+        w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: calf_r
       parentName: thigh_r
@@ -979,13 +981,13 @@ ModelImporter:
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: b02f7765ace5dff4a866b767512e4a05, type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: b02f7765ace5dff4a866b767512e4a05,
+    type: 3}
   autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 

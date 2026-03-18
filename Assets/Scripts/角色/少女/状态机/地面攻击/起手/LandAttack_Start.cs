@@ -44,9 +44,12 @@ public class LandAttack_Start : CharacterState<LandAttackType>
     {
         base.OnEnter();
         girlData.SetIsLandAttacking(true);
+        
+        inputManager.SetAttackInputWindow(false);
+        inputManager.SetMoveInputWindow(false);
+        inputManager.AttackExpire = false; // 重置攻击输入保质期
 
         MoveDistanceToEnemy = 0f;
-        inputManager.SetAttackInputWindow(false);
         girlData.NextLandAttackType = NextLandAttackType;
 
         if (enemyManager.currentTargetEnemy)
@@ -121,6 +124,13 @@ public class LandAttack_Start : CharacterState<LandAttackType>
     {
         base.OnExit();
         girlData.SetIsLandAttacking(false);
-        inputManager?.SetAttackInputWindow(true);
+
+        if(inputManager)
+        {
+            inputManager.SetMoveInputWindow(true);
+            inputManager.SetAttackInputWindow(true);
+            inputManager.AttackExpire = false; // 重置攻击输入保质期
+        }
+        
     }
 }

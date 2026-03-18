@@ -51,6 +51,14 @@ public class CoroutineManager : Singleton<CoroutineManager>
         }
     }
 
+    ///<summary>
+    /// 检查指定ID的协程是否正在运行
+    /// </summary>
+    public bool IsRunning(string id)
+    {
+        return coroutineDict.ContainsKey(id);
+    }
+
     /// <summary>
     /// 停止所有管理的协程
     /// </summary>

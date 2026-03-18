@@ -20,6 +20,7 @@ public class LandAttack_End : CharacterState<LandAttackType>
     public override void OnEnter()
     {
         base.OnEnter();
+        inputManager.SetMoveInputWindow(true);
         girlData.SetIsLandAttacking(true);
 
         animator.Play(AttackAnimationHash);
