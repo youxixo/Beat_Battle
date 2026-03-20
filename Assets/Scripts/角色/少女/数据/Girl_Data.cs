@@ -76,6 +76,17 @@ public class Girl_Data : MonoBehaviour
     /// </summary>
     [SerializeField] private float landAttackEx = 2f;
 
+
+    private LandAttackType CurrentLandAttackType = LandAttackType.LandAttack1_Start;
+    /// <summary>
+    /// 获取当前地面攻击的招式类型
+    /// </summary>
+    public LandAttackType GetCurrentLandAttackType => CurrentLandAttackType;
+    public void SetCurrentLandAttackType(LandAttackType type)
+    {
+        CurrentLandAttackType = type;
+    }
+    
     [SerializeField] private LandAttackType nextLandAttackType = LandAttackType.LandAttack1_Start;
     public LandAttackType NextLandAttackType
     {
@@ -96,5 +107,19 @@ public class Girl_Data : MonoBehaviour
         nextLandAttackType = LandAttackType.LandAttack1_Start;
     }
 
+    #endregion
+
+    #region 交互事件
+    [SerializeField] private bool isInteracting = false;
+
+    /// <summary>
+    /// 是否要进行交互状态
+    /// </summary>
+    public bool IsInteracting => isInteracting;
+
+    public void SetIsInteracting(bool value)
+    {
+        isInteracting = value;
+    }
     #endregion
 }

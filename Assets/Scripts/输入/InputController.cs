@@ -87,4 +87,15 @@ public class InputController : MonoBehaviour
             inputManager.DodgeEvent?.Invoke();
         }
     }
+
+    /// <summary>
+    /// 交互输入回调函数，当玩家按下交互键时调用，
+    /// </summary>
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            inputManager.InteractEvent?.Invoke();
+        }
+    }
 }

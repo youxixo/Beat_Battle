@@ -81,7 +81,10 @@ public class LandAttack_Start : CharacterState<LandAttackType>
 
         coroutineManager.Run("LandAttack_Start_Init_" + AttackAnimationHash, InitAfterAnimStart());
 
-        cameraManager.SwitchCamera(CameraType.BattleCamera);
+        if(enemyManager.currentTargetEnemy)
+        {
+            cameraManager.SwitchCamera(CameraType.BattleCamera);
+        }
     }
 
     public override void OnLogic()

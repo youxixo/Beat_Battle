@@ -21,10 +21,6 @@ public class SpherePainter : MonoBehaviour
         Gizmos.color = color;
         Vector3 center = transform.position;
 
-        // 1. 最简单的办法：直接调用 Unity 内置的线框球
-        // Gizmos.DrawWireSphere(center, radius);
-
-        // 2. 如果你想模仿你给出的代码风格，手动画出 XYZ 三个平面的大圆环：
         DrawCircle(center, Vector3.up, radius, segments);    // 水平环 (XZ)
         DrawCircle(center, Vector3.forward, radius, segments); // 垂直环 (XY)
         DrawCircle(center, Vector3.right, radius, segments);   // 侧面环 (YZ)
@@ -39,9 +35,9 @@ public class SpherePainter : MonoBehaviour
         for (int i = 1; i <= sideCount; i++)
         {
             float angle = i * 2 * Mathf.PI / sideCount;
-            // 在局部平面计算坐标
+            
             Vector3 localPoint = new Vector3(Mathf.Cos(angle) * r, Mathf.Sin(angle) * r, 0);
-            // 转换到世界坐标旋转
+           
             Vector3 newPoint = center + rotation * localPoint;
 
             Gizmos.DrawLine(prevPoint, newPoint);

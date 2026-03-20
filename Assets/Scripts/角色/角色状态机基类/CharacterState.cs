@@ -7,6 +7,8 @@ public class CharacterState<TStateId> : BaseState<TStateId>
     protected CoroutineManager coroutineManager => CoroutineManager.Instance;
     protected EnemyManager enemyManager => EnemyManager.Instance;
     protected CameraManager cameraManager => CameraManager.Instance;
+
+    protected BeatManager beatManager => BeatManager.Instance;
     public CharacterState(bool needsExitTime = false, bool isGhostState = false, Func<State<TStateId>, bool> canExit = null) : base(needsExitTime: needsExitTime, isGhostState: isGhostState, canExit: canExit)
     {
     }   

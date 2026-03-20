@@ -163,4 +163,11 @@ public class InputManager : Singleton<InputManager>
     }
     #endregion
 
+    #region 交互键
+    /// <summary>
+    /// 交互键输入事件，游戏对象自主订阅，当玩家按下交互键时触发，执行交互逻辑。
+    /// </summary>
+    public Action InteractEvent;
+    #endregion
+
 }

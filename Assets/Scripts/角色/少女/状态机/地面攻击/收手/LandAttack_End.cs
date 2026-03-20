@@ -8,13 +8,16 @@ public class LandAttack_End : CharacterState<LandAttackType>
     private float waitingTime = 0.1f; // 等待时间，确保动画状态切换完成
     private Girl_Data girlData;
 
-    public LandAttack_End(Girl_Data girl_Data, Animator animator, int attackAnimationHash, float waitingTime):base(needsExitTime: true,
+    private bool needWaitForAnimationEnd = true;
+
+    public LandAttack_End(Girl_Data girl_Data, Animator animator, int attackAnimationHash, float waitingTime, bool needWaitForAnimationEnd = true):base(needsExitTime: true,
                                                                       canExit: state => AnimatorTool.IsAnimationFinished_FullPath(animator, attackAnimationHash))
     {
         this.animator = animator;
         this.AttackAnimationHash = attackAnimationHash;
         this.waitingTime = waitingTime;
         this.girlData = girl_Data;
+        this.needWaitForAnimationEnd = needWaitForAnimationEnd;
     }
 
     public override void OnEnter()
@@ -39,7 +42,10 @@ public class LandAttack_End : CharacterState<LandAttackType>
         yield return null;
         float animationLength = AnimatorTool.GetRealAnimationLength_FullPath(animator, AttackAnimationHash);
         yield return new WaitForSeconds(animationLength);
-        yield return new WaitForSeconds(waitingTime);
+        if (needWaitForAnimationEnd)
+        {
+            yield return new WaitForSeconds(waitingTime);
+        }
         girlData.SetIsLandAttacking(false);
     }
 }

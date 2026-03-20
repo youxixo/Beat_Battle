@@ -40,6 +40,11 @@ public enum GirlStateType
     /// 地面攻击状态
     /// </summary>
     LandAttackMachine,
+
+    /// <summary>
+    /// 交互状态机
+    /// </summary>
+    InteractingMachine,
 }
 
 public enum JumpUpType
@@ -103,4 +108,14 @@ public enum LandAttackType
     LandAttack3_End,
 }
 
-
+public enum InteractingType
+{
+    /// <summary>
+    /// 交互准备状态
+    /// </summary>
+    InteractingReady,
+    /// <summary>
+    /// 交互开始状态
+    /// </summary>
+    InteractingStart,
+}

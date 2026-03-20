@@ -72,6 +72,30 @@ public class CameraManager : Singleton<CameraManager>
         CurrentCamera.Priority = 20;
     }
 
+    /// <summary>
+    /// 切换到制定摄像机
+    /// </summary>
+    public void SwitchCamera(CinemachineCamera camera)
+    {
+        if (CurrentCamera == camera) return; // 如果当前已经是目标摄像机，则不切换
+        CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
+        CurrentCamera = camera;
+        CurrentCamera.Priority = 20; // 将新摄像机优先级设置为20，确保它成为当前激活的摄像机
+    }
+
+    /// <summary>
+    /// 切换回默认摄像机
+    /// </summary>
+    public void SwitchToDefaultCamera()
+    {
+        if (CurrentCamera == DefaultCamera) return; // 如果当前已经是默认摄像机，则不切换
+        CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
+        CurrentCamera = DefaultCamera;
+        CurrentCamera.Priority = 20; // 将默认摄像机优先级设置为20，确保它成为当前激活的摄像机
+    }
+
+
+
     private bool EnemyInLeft()
     {
         Vector3 CharacterPos = CharacterManager.Instance.GetCurrentCharacterData.transform.position;
