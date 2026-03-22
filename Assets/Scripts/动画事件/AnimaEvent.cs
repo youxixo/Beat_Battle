@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class AnimaEvent : MonoBehaviour
 {
+    [SerializeField] private Girl_Data girlData;
     private InputManager inputManager => InputManager.Instance;
 
     /// <summary>
@@ -11,11 +12,11 @@ public class AnimaEvent : MonoBehaviour
     {
         if (canAttack == 1)
         {
-            inputManager?.SetAttackInputWindow(true);
+            girlData?.SetAttackTapInputWindow(true);
         }
         else
         {
-            inputManager?.SetAttackInputWindow(false);
+            girlData?.SetAttackTapInputWindow(false);
         }
     }
 
@@ -26,11 +27,11 @@ public class AnimaEvent : MonoBehaviour
     {
         if (canJump == 1)
         {
-            inputManager?.SetJumpInputWindow(true);
+            girlData?.SetJumpInputWindow(true);
         }
         else
         {
-            inputManager?.SetJumpInputWindow(false);
+            girlData?.SetJumpInputWindow(false);
         }
     }
 }

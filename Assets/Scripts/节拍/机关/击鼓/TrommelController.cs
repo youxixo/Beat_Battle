@@ -65,34 +65,32 @@ public class TrommelController : MonoBehaviour
             Debug.LogError("击鼓相机没设置！");
             return;
         }
-        Debug.Log("开始击鼓");
+
+        currentCharacterData.SetIsInteracting(true);
+
+
         IsInteracting = true;
         cameraManager.SwitchCamera(TrommelCamera);
         Vector3 OldCharacterPosition = currentCharacterData.transform.position;
         Vector3 NewCharacterPosition = new(CharacterStandTransform.position.x, OldCharacterPosition.y, CharacterStandTransform.position.z);
-        currentCharacterData.transform.position = NewCharacterPosition;
-        currentCharacterData.transform.rotation = Quaternion.LookRotation(CharacterStandTransform.forward);
-
-        currentCharacterData.SetIsInteracting(true);
-
+        currentCharacterData.transform.SetPositionAndRotation(NewCharacterPosition, Quaternion.LookRotation(CharacterStandTransform.forward));
+        
         WhenPlayerStartHitTrommel?.Invoke();
 
         // 开启节拍检测
         if(currentCharacterData.IsInteracting)
         {
-            beatManager.SetCharacterReadyForBeatCheck(false);
-            // 继续击鼓，重置节拍检测
-            coroutineManager.Run("ResetBeatCheck", ResetBeatCheckCoroutine());
+            coroutineManager.Run("ResetBeatCheck" + gameObject.GetInstanceID(), ResetBeatCheckCoroutine());
         }
     }
 
     private void HitChecker(BeatResult beatResult)
     {
-        if (beatResult == BeatResult.Miss) return;
-        
-        CurrentHits++;
-
-        NumberText.text = $"{CurrentHits}/{NumberOfHitsToWin}";
+        if (beatResult == BeatResult.Good)
+        {
+            CurrentHits++;
+            NumberText.text = $"{CurrentHits}/{NumberOfHitsToWin}";
+        }
 
         if(CurrentHits >= NumberOfHitsToWin)
         {
@@ -103,7 +101,7 @@ public class TrommelController : MonoBehaviour
         {
             beatManager.SetCharacterReadyForBeatCheck(false);
             // 继续击鼓，重置节拍检测
-            coroutineManager.Run("ResetBeatCheck", ResetBeatCheckCoroutine());
+            coroutineManager.Run("ResetBeatCheck" + gameObject.GetInstanceID(), ResetBeatCheckCoroutine());
         }
     }
 

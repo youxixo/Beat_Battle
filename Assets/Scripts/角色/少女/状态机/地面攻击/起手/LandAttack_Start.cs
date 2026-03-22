@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class LandAttack_Start : CharacterState<LandAttackType>
 {
-    private LandAttackType NextLandAttackType;
     private Animator animator;
     private int AttackAnimationHash;
 
@@ -26,7 +25,6 @@ public class LandAttack_Start : CharacterState<LandAttackType>
         CharacterController characterController,
         Animator animator,
         int attackAnimationHash,
-        LandAttackType nextLandAttackType,
         float attackRadius,
         float maxMoveDistance)
         : base(needsExitTime: true,
@@ -36,7 +34,6 @@ public class LandAttack_Start : CharacterState<LandAttackType>
         this.characterController = characterController;
         this.animator = animator;
         this.AttackAnimationHash = attackAnimationHash;
-        this.NextLandAttackType = nextLandAttackType;
         this.AttackRadius = attackRadius;
         this.MaxMoveDistance = maxMoveDistance;
     }
@@ -47,12 +44,12 @@ public class LandAttack_Start : CharacterState<LandAttackType>
 
         girlData.SetIsLandAttacking(true);
 
-        inputManager.SetAttackInputWindow(false);
-        inputManager.SetMoveInputWindow(false);
+        girlData.SetAttackTapInputWindow(false);
+        girlData.SetMoveInputWindow(false);
+
         inputManager.AttackExpire = false;
 
         MoveDistanceToEnemy = 0f;
-        girlData.NextLandAttackType = NextLandAttackType;
 
         // ===== 计算方向 =====
         if (enemyManager.currentTargetEnemy)
@@ -147,12 +144,13 @@ public class LandAttack_Start : CharacterState<LandAttackType>
         // ⭐ 必须重置动画速度！
         animator.speed = 1f;
 
-        if (inputManager)
+        if (girlData)
         {
-            inputManager.SetMoveInputWindow(true);
-            inputManager.SetAttackInputWindow(true);
-            inputManager.AttackExpire = false;
+            girlData.SetMoveInputWindow(true);
+            girlData.SetAttackTapInputWindow(true);
         }
+
+        inputManager.AttackExpire = false;
     }
 
     IEnumerator InitAfterAnimStart()

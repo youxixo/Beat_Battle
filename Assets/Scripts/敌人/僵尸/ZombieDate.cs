@@ -35,6 +35,10 @@ public class ZombieDate : MonoBehaviour
     }
     [SerializeField] private float moveSpeed = 2f;
     public float MoveSpeed => moveSpeed;
+    public void SetMoveSpeed(float MoveSpeed)
+    {
+        moveSpeed = MoveSpeed;
+    }
 
     [Header("攻击冷却")]
     [SerializeField] private float attackCooldown = 2f;

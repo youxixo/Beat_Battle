@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Girl_Data : MonoBehaviour
 {
     private CoroutineManager coroutineManager => CoroutineManager.Instance;
+
     [Header("移动属性")]
     #region 移动属性
     [SerializeField] private float moveSpeed = 5f;
@@ -52,6 +55,20 @@ public class Girl_Data : MonoBehaviour
     [Header("闪避属性")]
     [SerializeField] private float dodgeDistance = 5f;
     public float GetDodgeDistance => dodgeDistance;
+
+    /// <summary>
+    /// 闪避次数，决定表演值增加量
+    /// </summary>
+    [SerializeField] private int dodgeValue = 0;
+
+    /// <summary>
+    /// 获取当前闪避次数
+    /// </summary>
+    public int GetDodgeValue => dodgeValue;
+    public void SetDodgeValue(int value)
+    {
+        dodgeValue = value;
+    }
     #endregion
 
     #region 地面攻击属性
@@ -120,6 +137,89 @@ public class Girl_Data : MonoBehaviour
     public void SetIsInteracting(bool value)
     {
         isInteracting = value;
+    }
+    #endregion
+
+    #region 输入框口
+    [Header("输入窗口")]
+    /// <summary>
+    /// 短按攻击输入窗口
+    /// </summary>
+    [SerializeField] private bool attackTapInputWindow = true;
+
+    /// <summary>
+    /// 获取短按攻击输入窗口状态
+    /// </summary>
+    public bool GetAttackTapInputWindow => attackTapInputWindow;
+    public void SetAttackTapInputWindow(bool value)
+    {
+        attackTapInputWindow = value;
+    }
+
+    /// <summary>
+    /// 长按攻击输入窗口
+    /// </summary>
+    [SerializeField] private bool attackHoldInputWindow = true;
+    /// <summary>
+    /// 获取长按攻击输入窗口状态
+    /// </summary>
+    public bool GetAttackHoldInputWindow => attackHoldInputWindow;
+    public void SetAttackHoldInputWindow(bool value)
+    {
+        attackHoldInputWindow = value;
+    }
+
+    /// <summary>
+    /// 跳跃输入窗口
+    /// </summary>
+    [SerializeField] private bool jumpInputWindow = true;
+    /// <summary>
+    /// 获取跳跃输入窗口状态
+    /// </summary>
+    public bool GetJumpInputWindow => jumpInputWindow;
+    public void SetJumpInputWindow(bool value)
+    {
+        jumpInputWindow = value;
+    }
+
+    /// <summary>
+    /// 闪避输入窗口
+    /// </summary>
+    [SerializeField] private bool dodgeInputWindow = true;
+    /// <summary>
+    /// 获取闪避输入窗口状态
+    /// </summary>
+    public bool GetDodgeInputWindow => dodgeInputWindow;
+    public void SetDodgeInputWindow(bool value)
+    {
+        dodgeInputWindow = value;
+    }
+
+    /// 移动输入窗口
+    [SerializeField] private bool moveInputWindow = true;
+    /// <summary>
+    /// 获取移动输入窗口状态
+    /// </summary>
+    public bool GetMoveInputWindow => moveInputWindow;
+    public void SetMoveInputWindow(bool value)
+    {
+        moveInputWindow = value;
+    }
+    #endregion
+
+    #region 表现值
+    [Header("表现值")]
+    [SerializeField] private int MaxShowValue = 5;
+    [SerializeField] private int currentShowValue = 0;
+    public UnityEvent<float> ShowValueChangeAction;
+    public int CurrentShowValue
+    {
+        get => currentShowValue;
+        set
+        {
+            currentShowValue = Mathf.Clamp(value, 0, MaxShowValue);
+            ShowValueChangeAction?.Invoke(currentShowValue);
+        }
     }
     #endregion
 }

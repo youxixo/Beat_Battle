@@ -25,6 +25,6 @@ public class InteractingReady : CharacterState<InteractingType>
     public override void OnExit()
     {
         base.OnExit();
-        beatManager.SetCharacterReadyForBeatCheck(false);
+        beatManager?.SetCharacterReadyForBeatCheck(false);
     }
 }

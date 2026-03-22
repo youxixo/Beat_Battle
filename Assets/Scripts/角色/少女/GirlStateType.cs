@@ -45,6 +45,11 @@ public enum GirlStateType
     /// 交互状态机
     /// </summary>
     InteractingMachine,
+
+    /// <summary>
+    /// 特殊攻击状态机
+    /// </summary>
+    SpecialAttackMachine,
 }
 
 public enum JumpUpType
@@ -62,6 +67,11 @@ public enum JumpUpType
 public enum LandAttackType
 {
     LandAttack_Enter,
+
+    /// <summary>
+    /// 清空闪避数量
+    /// </summary>
+    ClearDodgeCount,
 
 
     /// <summary>
@@ -93,6 +103,15 @@ public enum LandAttackType
     /// </summary>
     LandAttack2_End,
 
+    /// <summary>
+    /// J节拍地面攻击检测状态
+    /// </summary>
+    LandAttack_JBeatCheck,
+
+    /// <summary>
+    /// 结算表演值
+    /// </summary>
+    SetShowValue,
 
     /// <summary>
     /// 地面攻击招式3起手状态
@@ -106,6 +125,32 @@ public enum LandAttackType
     /// 地面攻击招式3结束状态
     /// </summary>
     LandAttack3_End,
+
+
+
+    /// <summary>
+    /// 特殊攻击进入状态
+    /// </summary>
+    SpecialAttack_Enter,
+
+    /// <summary>
+    /// 双节拍判定状态
+    /// </summary>
+    BothBeatCheck,
+
+    /// <summary>
+    /// 特殊攻击起手状态
+    /// </summary>
+    SpecialAttack_Start,
+    /// <summary>
+    /// 特殊攻击攻击状态
+    /// </summary>
+    SpecialAttack_Attack,
+
+    /// <summary>
+    /// 特殊攻击结束状态
+    /// </summary>
+    SpecialAttack_End,
 }
 
 public enum InteractingType

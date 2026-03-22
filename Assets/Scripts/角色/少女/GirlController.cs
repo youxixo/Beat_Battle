@@ -8,6 +8,9 @@ public class GirlController : MonoBehaviour
     [SerializeField] private CharacterController characterController;
     [SerializeField] private GirlCheckGround girlCheckGround;
 
+    [Header("音频组件")]
+    [SerializeField] private AudioSource audioSource;
+
     [Header("动画组件")]
     [SerializeField] private Animator animator;
 
@@ -20,6 +23,10 @@ public class GirlController : MonoBehaviour
     [Header("闪避动画")]
     [SerializeField] private string Dodge_Front_AnimName = "Dodge_Front";
     [SerializeField] private string Dodge_Back_AnimName = "Dodge_Back";
+
+    [Header("闪避音效")]
+    [SerializeField] private AudioClip F_DodgeAudioClip;
+    [SerializeField] private AudioClip A_DodgeAudioClip;
 
     [Header("跳跃动画")]
     [SerializeField] private string JumpUpAnimName = "JumpUp";
@@ -36,6 +43,8 @@ public class GirlController : MonoBehaviour
     [SerializeField] private string Attack1StartAnimName = "Attack1Start";
     [SerializeField] private string Attack1WorkingAnimName = "Attack1Working";
     [SerializeField] private string Attack1EndAnimName = "Attack1End";
+    [Header("音效")]
+    [SerializeField] private AudioClip Attack1AudioClip;
 
     [Header("招式2")]
     [SerializeField] private SpherePainter LandAttack2MaxMoveDistanceRadius;
@@ -44,6 +53,8 @@ public class GirlController : MonoBehaviour
     [SerializeField] private string Attack2StartAnimName = "Attack2Start";
     [SerializeField] private string Attack2WorkingAnimName = "Attack2Working";
     [SerializeField] private string Attack2EndAnimName = "Attack2End";
+    [Header("音效")]
+    [SerializeField] private AudioClip Attack2AudioClip;
 
     [Header("招式3")]
     [SerializeField] private SpherePainter LandAttack3MaxMoveDistanceRadius;
@@ -52,6 +63,33 @@ public class GirlController : MonoBehaviour
     [SerializeField] private string Attack3StartAnimName = "Attack3Start";
     [SerializeField] private string Attack3WorkingAnimName = "Attack3Working";
     [SerializeField] private string Attack3EndAnimName = "Attack3End";
+    [Header("音效")]
+    [SerializeField] private AudioClip Attack3AudioClip;
+
+    [Header("特殊攻击")]
+
+    [Header("阶段1")]
+    [SerializeField] private SpherePainter SpecialAttackMaxMoveDistanceRadius;
+
+    [SerializeField] private SpherePainter Part1_SpecialAttackRadius;
+
+    [Header("动画")]
+    [SerializeField] private string Part1_SpecialAttackAnimName = "SpecialAttackWorking";
+
+    [Header("音效")]
+    [SerializeField] private AudioClip Part1_SpecialAttackAudioClip;
+
+    [Header("阶段2")]
+    [SerializeField] private SpherePainter SpecialAttack2MaxMoveDistanceRadius;
+    [SerializeField] private SpherePainter Part2_SpecialAttackRadius;
+    [Header("动画")]
+    [SerializeField] private string Part2_SpecialAttackAnimName = "SpecialAttackWorking2";
+
+    [Header("音效")]
+    [SerializeField] private AudioClip Part2_SpecialAttackAudioClip;
+
+    [Header("特殊攻击结束动画")]
+    [SerializeField] private string SpecialAttackEndAnimName = "SpecialAttackEnd";
 
     [Header("交互动画")]
     [SerializeField] private string InteractingReadyAnimName = "InteractingReady";
@@ -63,12 +101,13 @@ public class GirlController : MonoBehaviour
     private StateMachine<GirlStateType,JumpUpType,InputEvent> JumpUpStateMachine = new();
     private StateMachine<GirlStateType, LandAttackType, InputEvent> LandAttackStateMachine = new();
     private StateMachine<GirlStateType, InteractingType, InputEvent> InteractingStateMachine = new();
+    private StateMachine<GirlStateType, LandAttackType, InputEvent> SpecialAttackStateMachine = new();
 
     private bool isGround => girlCheckGround.GetIsGround;
 
     private InputManager inputManager => InputManager.Instance;
     private CharacterManager characterManager => CharacterManager.Instance;
-    private BeatResult CurrentBeatResult => BeatManager.Instance.CurrentBeatResult;
+    private BeatManager beatManager => BeatManager.Instance;
 
     private Vector3 moveDirection => inputManager.GetMoveDirection;
 
@@ -81,7 +120,8 @@ public class GirlController : MonoBehaviour
         Build_JumpUpMachine();
         Build_LandAttackMachine();
         Build_InteractingMachine();
-
+        Build_SpecialAttackMachine();
+        
 
         Build_RootMachine();
     }
@@ -141,7 +181,8 @@ public class GirlController : MonoBehaviour
         GirlRootStateMachine.AddState(GirlStateType.JumpLand, new Jump_Land_Girl(animator, Animator.StringToHash(JumpLandAnimName)));
         GirlRootStateMachine.AddState(GirlStateType.LandAttackMachine, LandAttackStateMachine);
         GirlRootStateMachine.AddState(GirlStateType.LandDodge, new LandDodge_Girl(animator, characterController, girlData, 
-                                                                    Dodge_Front_AnimName, Dodge_Back_AnimName));
+                                                                    Dodge_Front_AnimName, Dodge_Back_AnimName, 
+                                                                    audioSource, F_DodgeAudioClip, A_DodgeAudioClip));
         GirlRootStateMachine.AddState(GirlStateType.InteractingMachine, InteractingStateMachine);
 
         // 待输入状态切换
@@ -174,14 +215,17 @@ public class GirlController : MonoBehaviour
         //地面攻击状态切换
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, t => !girlData.GetIsLandAttacking);
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, 
-                                            t => moveDirection != Vector3.zero && inputManager.GetMoveInputWindow &&
+                                            t => moveDirection != Vector3.zero && girlData.GetMoveInputWindow &&
                                             LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack1_End);
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, 
-                                            t => moveDirection != Vector3.zero && inputManager.GetMoveInputWindow &&
+                                            t => moveDirection != Vector3.zero && girlData.GetMoveInputWindow &&
                                             LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack2_End, forceInstantly: true);
         GirlRootStateMachine.AddTransition(GirlStateType.LandAttackMachine, GirlStateType.WaitingInput, 
-                                            t => moveDirection != Vector3.zero && inputManager.GetMoveInputWindow &&
+                                            t => moveDirection != Vector3.zero && girlData.GetMoveInputWindow &&
                                             LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack3_End, forceInstantly: true);
+        
+        //交互状态切换
+        GirlRootStateMachine.AddTransition(GirlStateType.InteractingMachine, GirlStateType.WaitingInput, t => !girlData.IsInteracting);
 
         //任意状态切换
         GirlRootStateMachine.AddTransitionFromAny(GirlStateType.InteractingMachine, t => girlData.IsInteracting);
@@ -193,7 +237,7 @@ public class GirlController : MonoBehaviour
                                             t => isGround && currentState != GirlStateType.LandAttackMachine && !girlData.IsInteracting, forceInstantly: true);
         GirlRootStateMachine.AddTransitionFromAny(GirlStateType.LandAttackMachine, t=> isGround && 
                                                                                 currentState != GirlStateType.LandAttackMachine &&
-                                                                                inputManager.GetAttackInputWindow&&
+                                                                                girlData.GetAttackTapInputWindow&&
                                                                                 inputManager.AttackExpire && !girlData.IsInteracting);
         
         
@@ -218,40 +262,65 @@ public class GirlController : MonoBehaviour
     {
         LandAttackStateMachine.AddState(LandAttackType.LandAttack_Enter, new LandAttack_Enter(girlData));
 
+        // 清空闪避值状态
+        LandAttackStateMachine.AddState(LandAttackType.ClearDodgeCount, new ClearDodgeValue_LandAttack(girlData));
+
         // 地面攻击1状态
         LandAttackStateMachine.AddState(LandAttackType.LandAttack1_Start, new LandAttack_Start(girlData, characterController, animator, 
-                                                                    Animator.StringToHash(Attack1StartAnimName), LandAttackType.LandAttack2_Start, 
+                                                                    Animator.StringToHash(Attack1StartAnimName), 
                                                                     LandAttack1Radius.GetRadius, LandAttack1MaxMoveDistanceRadius.GetRadius));
-        LandAttackStateMachine.AddState(LandAttackType.LandAttack1_Attack, new LandAttack_Attack(LandAttackType.LandAttack1_Attack,girlData, animator, 
-                                                                    Animator.StringToHash(Attack1WorkingAnimName), LandAttackCollider));
+        LandAttackStateMachine.AddState(LandAttackType.LandAttack1_Attack, new LandAttack_Attack(LandAttackType.LandAttack1_Attack,
+                                                                                                LandAttackType.LandAttack2_Start,
+                                                                                                girlData, animator, 
+                                                                                                Animator.StringToHash(Attack1WorkingAnimName), 
+                                                                                                LandAttackCollider,
+                                                                                                audioSource, Attack1AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack1_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack1EndAnimName), 1f));
     
         // 地面攻击2状态
         LandAttackStateMachine.AddState(LandAttackType.LandAttack2_Start, new LandAttack_Start(girlData, characterController, animator, 
-                                                                    Animator.StringToHash(Attack2StartAnimName), LandAttackType.LandAttack1_Start, 
+                                                                    Animator.StringToHash(Attack2StartAnimName), 
                                                                     LandAttack2Radius.GetRadius, LandAttack2MaxMoveDistanceRadius.GetRadius));
-        LandAttackStateMachine.AddState(LandAttackType.LandAttack2_Attack, new LandAttack_Attack(LandAttackType.LandAttack2_Attack,girlData, animator, 
-                                                                    Animator.StringToHash(Attack2WorkingAnimName), LandAttackCollider, true));
+        LandAttackStateMachine.AddState(LandAttackType.LandAttack2_Attack, new LandAttack_Attack(LandAttackType.LandAttack2_Attack,
+                                                                            LandAttackType.LandAttack_JBeatCheck,
+                                                                            girlData, animator, 
+                                                                            Animator.StringToHash(Attack2WorkingAnimName), 
+                                                                            LandAttackCollider,
+                                                                            audioSource, Attack2AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack2_End, new LandAttack_End(girlData, animator, 
-                                                                    Animator.StringToHash(Attack2EndAnimName), 1f, false));
+                                                                    Animator.StringToHash(Attack2EndAnimName), 1f));
+
+        // J节拍地面攻击检测状态
+        LandAttackStateMachine.AddState(LandAttackType.LandAttack_JBeatCheck, new BeatDetection_LandAttack(animator, girlData, 
+                                                                                                            BeatCheckType.JBeatCheck));
+
+        // 结算表演值状态
+        LandAttackStateMachine.AddState(LandAttackType.SetShowValue, new SettleShowValue_LandAttack(girlData));
 
         // 地面攻击3状态
         LandAttackStateMachine.AddState(LandAttackType.LandAttack3_Start, new LandAttack_Start(girlData, characterController, animator, 
-                                                                    Animator.StringToHash(Attack3StartAnimName), LandAttackType.LandAttack1_Start, 
+                                                                    Animator.StringToHash(Attack3StartAnimName), 
                                                                     LandAttack3Radius.GetRadius, LandAttack3MaxMoveDistanceRadius.GetRadius));
-        LandAttackStateMachine.AddState(LandAttackType.LandAttack3_Attack, new LandAttack_Attack(LandAttackType.LandAttack3_Attack,girlData, animator, 
-                                                                    Animator.StringToHash(Attack3WorkingAnimName), LandAttackCollider));
+        LandAttackStateMachine.AddState(LandAttackType.LandAttack3_Attack, new LandAttack_Attack(LandAttackType.LandAttack3_Attack,
+                                                                                                LandAttackType.LandAttack1_Start,
+                                                                                                girlData, animator, 
+                                                                                                Animator.StringToHash(Attack3WorkingAnimName), 
+                                                                                                LandAttackCollider,
+                                                                                                audioSource, Attack3AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack3_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack3EndAnimName), 1f));     
 
-        //转换
-        LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack1_Start, 
-                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack1_Start);
-        LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack2_Start, 
-                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack2_Start);
-        LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack3_Start, 
-                                            t => girlData.NextLandAttackType == LandAttackType.LandAttack3_Start);
+        //进入转换
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.ClearDodgeCount, 
+                                                t => girlData.NextLandAttackType == LandAttackType.LandAttack1_Start);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack2_Start, 
+                                                t => girlData.NextLandAttackType == LandAttackType.LandAttack2_Start);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_Enter, LandAttackType.LandAttack_JBeatCheck, 
+                                                t => girlData.NextLandAttackType == LandAttackType.LandAttack_JBeatCheck);
+
+        // 清空闪避值转换
+            LandAttackStateMachine.AddTransition(LandAttackType.ClearDodgeCount, LandAttackType.LandAttack1_Start);
 
         //地面攻击1
             // 起手 -> 攻击
@@ -260,7 +329,7 @@ public class GirlController : MonoBehaviour
             LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack1_Attack, 
                                                         LandAttackType.LandAttack2_Start, forceInstantly: true);
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack1_Attack, LandAttackType.LandAttack2_Start, 
-                            t => inputManager.AttackExpire && inputManager.GetAttackInputWindow, forceInstantly: true);
+                            t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
             //攻击 -> 结束
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack1_Attack, LandAttackType.LandAttack1_End);
 
@@ -268,48 +337,65 @@ public class GirlController : MonoBehaviour
             LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack1_End, 
                                                     LandAttackType.LandAttack2_Start, forceInstantly: true);
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack1_End, LandAttackType.LandAttack2_Start, 
-                            t => inputManager.AttackExpire && inputManager.GetAttackInputWindow, forceInstantly: true);
+                            t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
 
         //地面攻击2
-            // 起手 -> 攻击
+            // 起手 -> 攻击2
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_Start, LandAttackType.LandAttack2_Attack);
+
+            // 攻击2 -> j节拍检测
+            LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack2_Attack, 
+                                                        LandAttackType.LandAttack_JBeatCheck, 
+                                                        forceInstantly: true);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_Attack, LandAttackType.LandAttack_JBeatCheck,
+                                                t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
             //攻击 -> 结束
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_Attack, LandAttackType.LandAttack2_End);
 
-            // 攻击2 -> 攻击3
-            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_Attack, 
-                                                        LandAttackType.LandAttack3_Start, 
-                                                        t => CurrentBeatResult == BeatResult.Good,
+            // 结束 -> j节拍检测
+            LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack2_End, 
+                                                        LandAttackType.LandAttack_JBeatCheck, 
                                                         forceInstantly: true);
-            // 攻击 2 -> 结束
-            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_Attack, LandAttackType.LandAttack2_End, 
-                                                t => CurrentBeatResult != BeatResult.Miss, forceInstantly: true);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_End, LandAttackType.LandAttack_JBeatCheck,
+                                                t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
 
-            // 结束 -> 攻击3
-            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack2_End, LandAttackType.LandAttack3_Start, 
-                            t => CurrentBeatResult == BeatResult.Good, forceInstantly: true);
-
-            
+        // J节拍检测
+            // j节拍检测 -> 结算表演值
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_JBeatCheck, LandAttackType.SetShowValue,
+                                                t => beatManager.JBeatCheckResult == BeatResult.Good);
+            // 结节拍检测 -> 招式1
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack_JBeatCheck, LandAttackType.ClearDodgeCount,
+                                                t => beatManager.JBeatCheckResult == BeatResult.Miss);
+        
+        // 结算表演值
+            // 结算表演值 -> 招式3
+            LandAttackStateMachine.AddTransition(LandAttackType.SetShowValue, LandAttackType.LandAttack3_Start);
+        
         //地面攻击3
             // 起手 -> 攻击
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_Start, LandAttackType.LandAttack3_Attack);
 
-            //攻击3 -> 攻击1
+            //攻击3 -> 清空闪避值
             LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack3_Attack, 
-                                                        LandAttackType.LandAttack1_Start, forceInstantly: true);
-            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_Attack, LandAttackType.LandAttack1_Start, 
-                            t => inputManager.AttackExpire && inputManager.GetAttackInputWindow, forceInstantly: true);
+                                                        LandAttackType.ClearDodgeCount, forceInstantly: true);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_Attack, LandAttackType.ClearDodgeCount, 
+                            t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
             //攻击3 -> 结束
             LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_Attack, LandAttackType.LandAttack3_End);
 
-            // 结束 -> 攻击1
+            // 结束 -> 清空闪避值
             LandAttackStateMachine.AddTriggerTransition(InputEvent.AttackTap, LandAttackType.LandAttack3_End, 
-                                                        LandAttackType.LandAttack1_Start, forceInstantly: true);
-            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_End, LandAttackType.LandAttack1_Start, 
-                            t => inputManager.AttackExpire && inputManager.GetAttackInputWindow, forceInstantly: true);
+                                                        LandAttackType.ClearDodgeCount, forceInstantly: true);
+            LandAttackStateMachine.AddTransition(LandAttackType.LandAttack3_End, LandAttackType.ClearDodgeCount, 
+                            t => inputManager.AttackExpire && girlData.GetAttackTapInputWindow, forceInstantly: true);
 
 
         LandAttackStateMachine.SetStartState(LandAttackType.LandAttack_Enter);
+    }
+
+    private void Build_SpecialAttackMachine()
+    {
+        
     }
 
     private void Build_InteractingMachine()
@@ -317,35 +403,56 @@ public class GirlController : MonoBehaviour
         InteractingStateMachine.AddState(InteractingType.InteractingReady, new InteractingReady(animator, InteractingReadyAnimName));
         InteractingStateMachine.AddState(InteractingType.InteractingStart, new InteractingStarts(animator, InteractingStartAnimName));
 
-        InteractingStateMachine.AddTransition(InteractingType.InteractingReady, InteractingType.InteractingStart, t => CurrentBeatResult != BeatResult.none);
+        InteractingStateMachine.AddTransition(InteractingType.InteractingReady, InteractingType.InteractingStart, t => beatManager.CurrentBeatResult != BeatResult.none);
         
         InteractingStateMachine.AddTransition(InteractingType.InteractingStart, InteractingType.InteractingReady);
 
         InteractingStateMachine.SetStartState(InteractingType.InteractingReady);
     }
 
+    #region 输入事件
+
     /// <summary>
     /// 点击攻击键
     /// </summary>
     void Tap_Attack()
     {
+        if(!girlData.GetAttackTapInputWindow) return;
+
         GirlRootStateMachine.Trigger(InputEvent.AttackTap);
     }
 
+    /// <summary>
+    /// 长按攻击键
+    /// </summary>
     void Hold_Attack()
     {
+        if(!girlData.GetAttackHoldInputWindow) return;
+
         GirlRootStateMachine.Trigger(InputEvent.AttackHold);
     }
 
+    /// <summary>
+    /// 点击跳跃键
+    /// </summary>
     void Jump()
     {
+        if(!girlData.GetJumpInputWindow) return;
+
         GirlRootStateMachine.Trigger(InputEvent.Jump);
     }
 
+    /// <summary>
+    /// 点击闪避键
+    /// </summary>
     void Dodge()
     {
+        if(!girlData.GetDodgeInputWindow) return;
+
         GirlRootStateMachine.Trigger(InputEvent.Dodge);
     }
+
+    #endregion
 
     #if UNITY_EDITOR
     private void OnValidate()

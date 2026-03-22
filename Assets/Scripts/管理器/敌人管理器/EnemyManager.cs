@@ -9,12 +9,21 @@ public class EnemyManager : Singleton<EnemyManager>
     [SerializeField] private Transform CurrentTargetEnemy;
     /// <summary>
     /// 当前目标敌人
+    /// 如果字典中没有当前目标敌人，或者当前目标敌人不在范围内，则更新目标敌人
     /// </summary>
     public Transform currentTargetEnemy
     {
         get
         {
+            if(CurrentTargetEnemy && CurrentTargetEnemy.gameObject.name == "Capsule")
+            {
+                return CurrentTargetEnemy;
+            }
             if (CurrentTargetEnemy == null || !isEnemyInRange(CurrentTargetEnemy))
+            {
+                CurrentTargetEnemy = UpdateTargetEnemy();
+            }
+            else if(!enemyDict.ContainsKey(CurrentTargetEnemy.gameObject.GetInstanceID()))
             {
                 CurrentTargetEnemy = UpdateTargetEnemy();
             }
@@ -31,7 +40,6 @@ public class EnemyManager : Singleton<EnemyManager>
         if (!enemyDict.ContainsKey(enemy.gameObject.GetInstanceID()))
         {
             enemyDict.Add(enemy.gameObject.GetInstanceID(), enemy);
-            Debug.Log($"注册敌人: {enemy.gameObject.name}，当前敌人数量: {enemyDict.Count}");
         }
     }
 

@@ -1,7 +1,11 @@
+using System.Collections;
 using UnityEngine;
+
 
 public class CircularController : MonoBehaviour
 {
+    [SerializeField] private BeatCheckType BeatType;
+
     [SerializeField] private RectTransform OutCircle;
 
     [SerializeField] protected RectTransform InCircle;
@@ -16,11 +20,15 @@ public class CircularController : MonoBehaviour
     [Header("InCircle最终大小（单位：像素）")]
     [SerializeField] private float InCircleFinalSize;
 
+    [Header("显示出来后，几秒后才正式开始检测节拍，单位：秒")]
+    [SerializeField] private float beatCheckDelayTime = 0.5f;
+
     private Vector3 inCircleSize;
     private bool isBeatActive;
 
     private InputManager inputManager => InputManager.Instance;
     private BeatManager beatManager => BeatManager.Instance;
+    private CoroutineManager coroutineManager => CoroutineManager.Instance;
 
     private void Awake()
     {
@@ -30,8 +38,8 @@ public class CircularController : MonoBehaviour
 
     void OnEnable()
     {
-        inputManager.AttackTapEvent += CheckBeat;
-        isBeatActive = true;
+
+        coroutineManager.Run("BeatCheckDelay" + gameObject.GetInstanceID(), BeatCheckDelayCoroutine());
     }
 
     private void Update()
@@ -46,19 +54,51 @@ public class CircularController : MonoBehaviour
         if (InCircle.localScale.x >= inCircleSize.x)
         {
             isBeatActive = false;
-            beatManager.CurrentBeatResult = BeatResult.Miss;
+            switch (BeatType)
+            {
+                case BeatCheckType.JBeatCheck:
+                    beatManager.JBeatCheckResult = BeatResult.Miss;
+                    break;
+                case BeatCheckType.KBeatCheck:
+                    beatManager.KBeatCheckResult = BeatResult.Miss;
+                    break;
+            }
             gameObject.SetActive(false);
         }
     }
+
+    
 
     void OnDisable()
     {
         if (inputManager != null)
         {
             inputManager.AttackTapEvent -= CheckBeat;
+            inputManager.DodgeEvent -= CheckBeat;
         }
 
+        if(coroutineManager)
+        {
+            coroutineManager.Stop("BeatCheckDelay" + gameObject.GetInstanceID());
+        }
+        isBeatActive = false;
+
         InCircle.localScale = Vector3.zero;
+    }
+
+    IEnumerator BeatCheckDelayCoroutine()
+    {
+        yield return new WaitForSeconds(beatCheckDelayTime);
+        switch (BeatType)
+        {
+            case BeatCheckType.JBeatCheck:
+                inputManager.AttackTapEvent += CheckBeat;
+                break;
+            case BeatCheckType.KBeatCheck:
+                inputManager.DodgeEvent += CheckBeat;
+                break;
+        }
+        isBeatActive = true;
     }
 
     private void CheckBeat()
@@ -70,12 +110,27 @@ public class CircularController : MonoBehaviour
         if (Mathf.Abs(inCircleSize.x - outCircleSize.x) <= beatRange)
         {
             // 在这里执行击打成功的逻辑
-            beatManager.CurrentBeatResult = BeatResult.Good;
+            switch (BeatType)
+            {
+                case BeatCheckType.JBeatCheck:
+                    beatManager.JBeatCheckResult = BeatResult.Good;
+                    break;
+                case BeatCheckType.KBeatCheck:
+                    beatManager.KBeatCheckResult = BeatResult.Good;
+                    break;
+            }
         }
         else
         {
-            // 在这里执行击打失败的逻辑
-            beatManager.CurrentBeatResult = BeatResult.Miss;
+            switch (BeatType)
+            {
+                case BeatCheckType.JBeatCheck:
+                    beatManager.JBeatCheckResult = BeatResult.Miss;
+                    break;
+                case BeatCheckType.KBeatCheck:
+                    beatManager.KBeatCheckResult = BeatResult.Miss;
+                    break;
+            }
         }
 
         gameObject.SetActive(false);

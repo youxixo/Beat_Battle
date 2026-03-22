@@ -100,8 +100,15 @@ public class CameraManager : Singleton<CameraManager>
     {
         Vector3 CharacterPos = CharacterManager.Instance.GetCurrentCharacterData.transform.position;
         Vector3 CharacterForward = CharacterManager.Instance.GetCurrentCharacterData.transform.forward;
-        Vector3 EnemyPos = EnemyManager.Instance.currentTargetEnemy.position;
 
+        Transform currentTargetEnemy = EnemyManager.Instance.currentTargetEnemy;
+
+        if (currentTargetEnemy == null)
+        {
+            return true; // 如果没有目标敌人，默认使用左侧战斗摄像机
+        }
+
+        Vector3 EnemyPos = currentTargetEnemy.position;
         return Tool.IsLeft(EnemyPos, CharacterPos, CharacterForward);
     }
     

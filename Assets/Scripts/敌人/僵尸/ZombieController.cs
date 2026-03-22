@@ -30,8 +30,6 @@ public class ZombieController : MonoBehaviour
 
     private DownTimer AttackCooldownTimer;
 
-    private bool CandoSomething = true;
-
     private void Awake()
     {
         foreach (var collider in AttackBoxCollider)
@@ -52,10 +50,7 @@ public class ZombieController : MonoBehaviour
 
     void Update()
     {
-        if (CandoSomething)
-        {
-            zombieStateMachine.OnLogic();
-        }
+        zombieStateMachine.OnLogic();
     }
 
     void OnDisable()
@@ -113,16 +108,18 @@ public class ZombieController : MonoBehaviour
         return distanceToPlayer <= zombieDate.AttackRange;
     }
 
+    private float cacheMoveSpeed;
     private void Stop()
     {
-        animator.speed = 0;
-        CandoSomething = false;
+        animator.speed = 0.3f;
+        cacheMoveSpeed= zombieDate.MoveSpeed;
+        zombieDate.SetMoveSpeed(0.1f);
     }
 
     private void Resume()
     {
         animator.speed = 1;
-        CandoSomething = true;
+        zombieDate.SetMoveSpeed(cacheMoveSpeed);
     }
 
     /// <summary>

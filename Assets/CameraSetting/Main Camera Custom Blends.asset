@@ -24,3 +24,25 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: "\u8282\u62CD\u673A\u76F8\u673A \u5173\u53612"
+    Blend:
+      Style: 0
+      Time: 0
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0
+  - From: '**ANY CAMERA**'
+    To: "\u8282\u62CD\u673A\u76F8\u673A \u5173\u53614"
+    Blend:
+      Style: 0
+      Time: 0
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 0

@@ -37,14 +37,11 @@ public class InputController : MonoBehaviour
     /// <param name="context"></param>
     public void OnAttackTap(InputAction.CallbackContext context)
     {
-        bool attackInputWindow = inputManager.GetAttackInputWindow;
         
         if (context.performed)
         {
-            if(attackInputWindow)
-            {
-                inputManager.AttackTapEvent?.Invoke();
-            }
+            inputManager.AttackTapEvent?.Invoke();
+
             inputManager.AttackExpire = true; // 设置攻击输入保质期
         }
     }
@@ -56,9 +53,8 @@ public class InputController : MonoBehaviour
     /// <param name="context"></param>
     public void OnAttackHold(InputAction.CallbackContext context)
     {
-        bool attackInputWindow = inputManager.GetAttackInputWindow;
 
-        if (context.performed && attackInputWindow)
+        if (context.performed)
         {
             inputManager.AttackHoldEvent?.Invoke();
         }
@@ -70,9 +66,7 @@ public class InputController : MonoBehaviour
     /// <param name="context"></param>
     public void OnJump(InputAction.CallbackContext context)
     {
-        bool jumpInputWindow = inputManager.GetJumpInputWindow;
-
-        if (context.performed && jumpInputWindow)
+        if (context.performed)
         {
             inputManager.JumpEvent?.Invoke();
         }
@@ -80,9 +74,7 @@ public class InputController : MonoBehaviour
     
     public void OnDodge(InputAction.CallbackContext context)
     {
-        bool dodgeInputWindow = inputManager.GetDodgeInputWindow;
-
-        if (context.performed && dodgeInputWindow)
+        if (context.performed)
         {
             inputManager.DodgeEvent?.Invoke();
         }

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class CheckPlayersEnterRoom : MonoBehaviour
 {
     [SerializeField] private RoomController roomController; // 引用房间控制器

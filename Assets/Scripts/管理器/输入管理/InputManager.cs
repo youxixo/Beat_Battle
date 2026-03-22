@@ -25,21 +25,6 @@ public class InputManager : Singleton<InputManager>
         MoveDirection = new Vector3(moveDirection.x, 0, moveDirection.y);
     }
 
-    /// <summary>
-    /// 移动输入窗口
-    /// </summary>
-    private bool moveInputWindow = true;
-
-    public bool GetMoveInputWindow
-    {
-        get { return moveInputWindow; }
-    }
-
-    public void SetMoveInputWindow(bool isOpen)
-    {
-        moveInputWindow = isOpen;
-    }
-
     #endregion
 
     #region 攻击键
@@ -84,53 +69,10 @@ public class InputManager : Singleton<InputManager>
         attackExpire = false;
     }
 
-
-
-    /// <summary>
-    /// 攻击键输入窗口
-    /// </summary>
-    [SerializeField]private bool AttackInputWindow = true;
-
-    /// <summary>
-    /// 获取攻击键输入窗口状态
-    /// </summary>
-    public bool GetAttackInputWindow
-    {
-        get { return AttackInputWindow; }
-    }
-
-    /// <summary>
-    /// 设置攻击键输入窗口，通常由输入系统调用，当玩家按下攻击键时打开窗口，释放时关闭窗口。
-    /// </summary>
-    public void SetAttackInputWindow(bool isOpen)
-    {
-        AttackInputWindow = isOpen;
-    }
     #endregion
 
     #region 跳跃键
     public Action JumpEvent;
-
-    /// <summary>
-    /// 跳跃键输入窗口
-    /// </summary>
-    [SerializeField]private bool JumpInputWindow = true;
-
-    /// <summary>
-    /// 获取跳跃键输入窗口状态
-    /// </summary>
-    public bool GetJumpInputWindow
-    {
-        get { return JumpInputWindow; }
-    }
-
-    /// <summary>
-    /// 设置跳跃键输入窗口，通常由输入系统调用，当玩家按下跳跃键时打开窗口，释放时关闭窗口。
-    /// </summary>
-    public void SetJumpInputWindow(bool isOpen)
-    {
-        JumpInputWindow = isOpen;
-    }
 
     #endregion
 
@@ -139,28 +81,6 @@ public class InputManager : Singleton<InputManager>
     /// 闪避键输入事件，通常由输入系统调用，当玩家按下闪避键时触发，执行闪避逻辑。
     /// </summary>
     public Action DodgeEvent;
-
-    /// <summary>
-    /// 闪避键输入窗口
-    /// </summary>
-    [SerializeField]private bool DodgeInputWindow = true;
-
-    /// <summary>
-    /// 获取闪避键输入窗口状态
-    /// </summary>
-    public bool GetDodgeInputWindow
-    {
-        get { return DodgeInputWindow; }
-    }
-
-    /// <summary>
-    /// 设置闪避键输入窗口，通常由输入系统调用，当玩家按下闪
-    /// </summary>
-    /// <param name="isOpen">闪避键输入窗口状态</param>
-    public void SetDodgeInputWindow(bool isOpen)
-    {
-        DodgeInputWindow = isOpen;
-    }
     #endregion
 
     #region 交互键
