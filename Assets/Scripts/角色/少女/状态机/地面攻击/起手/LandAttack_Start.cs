@@ -150,7 +150,10 @@ public class LandAttack_Start : CharacterState<LandAttackType>
             girlData.SetAttackTapInputWindow(true);
         }
 
-        inputManager.AttackExpire = false;
+        if(inputManager)
+        {
+            inputManager.AttackExpire = false;
+        }
     }
 
     IEnumerator InitAfterAnimStart()

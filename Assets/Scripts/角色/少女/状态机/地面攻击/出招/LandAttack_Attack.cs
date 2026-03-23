@@ -74,7 +74,10 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
             girlData.SetMoveInputWindow(true);
         }
 
-        inputManager.AttackExpire = false;
+        if(inputManager)
+        {
+            inputManager.AttackExpire = false;
+        }
     }
 
     IEnumerator AttackCoroutine()

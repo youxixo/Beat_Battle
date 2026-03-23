@@ -210,6 +210,7 @@ public class Girl_Data : MonoBehaviour
     #region 表现值
     [Header("表现值")]
     [SerializeField] private int MaxShowValue = 5;
+    public int GetMaxShowValue => MaxShowValue;
     [SerializeField] private int currentShowValue = 0;
     public UnityEvent<float> ShowValueChangeAction;
     public int CurrentShowValue

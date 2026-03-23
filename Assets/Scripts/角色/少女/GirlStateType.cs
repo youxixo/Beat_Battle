@@ -141,11 +141,11 @@ public enum LandAttackType
     /// <summary>
     /// 特殊攻击起手状态
     /// </summary>
-    SpecialAttack_Start,
+    SpecialAttack_Part1,
     /// <summary>
     /// 特殊攻击攻击状态
     /// </summary>
-    SpecialAttack_Attack,
+    SpecialAttack_Part2,
 
     /// <summary>
     /// 特殊攻击结束状态

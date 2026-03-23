@@ -184,6 +184,7 @@ public class GirlController : MonoBehaviour
                                                                     Dodge_Front_AnimName, Dodge_Back_AnimName, 
                                                                     audioSource, F_DodgeAudioClip, A_DodgeAudioClip));
         GirlRootStateMachine.AddState(GirlStateType.InteractingMachine, InteractingStateMachine);
+        GirlRootStateMachine.AddState(GirlStateType.SpecialAttackMachine, SpecialAttackStateMachine);
 
         // 待输入状态切换
         GirlRootStateMachine.AddTriggerTransition(InputEvent.Jump, GirlStateType.WaitingInput, GirlStateType.JumpUpMachine,t => girlData.CanJump);
@@ -227,8 +228,20 @@ public class GirlController : MonoBehaviour
         //交互状态切换
         GirlRootStateMachine.AddTransition(GirlStateType.InteractingMachine, GirlStateType.WaitingInput, t => !girlData.IsInteracting);
 
+        //特殊攻击状态切换
+        GirlRootStateMachine.AddTransition(GirlStateType.SpecialAttackMachine, GirlStateType.LandAttackMachine, 
+                                                                                t => beatManager.CurrentBeatResult == BeatResult.Miss);
+        GirlRootStateMachine.AddTransition(GirlStateType.SpecialAttackMachine, GirlStateType.WaitingInput,
+                                                                                t => !girlData.GetIsLandAttacking);
+        GirlRootStateMachine.AddTransition(GirlStateType.SpecialAttackMachine, GirlStateType.WaitingInput, 
+                                            t => moveDirection != Vector3.zero && 
+                                            SpecialAttackStateMachine.ActiveStateName == LandAttackType.SpecialAttack_End, forceInstantly: true);
+
         //任意状态切换
         GirlRootStateMachine.AddTransitionFromAny(GirlStateType.InteractingMachine, t => girlData.IsInteracting);
+        GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.AttackHold, GirlStateType.SpecialAttackMachine, 
+                                                        t => isGround && !girlData.IsInteracting && 
+                                                        girlData.CurrentShowValue==girlData.GetMaxShowValue, forceInstantly: true);
         GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.Dodge, GirlStateType.LandDodge,
                                             t => isGround && currentState != GirlStateType.LandDodge && !girlData.IsInteracting, forceInstantly: true);
         GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.Jump, GirlStateType.JumpUpMachine, 
@@ -395,7 +408,34 @@ public class GirlController : MonoBehaviour
 
     private void Build_SpecialAttackMachine()
     {
-        
+        SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Enter, new SpecialAttack_Enter(girlData));
+        SpecialAttackStateMachine.AddState(LandAttackType.BothBeatCheck, new BeatDetection_LandAttack(animator, girlData,
+                                                                                                    BeatCheckType.BothCheck,
+                                                                                                    BeatCheckType.JBeatCheck,
+                                                                                                    1f));
+        SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part1, new LandAttack_Attack(LandAttackType.SpecialAttack_Part1, 
+                                                                    LandAttackType.LandAttack1_Attack, girlData, animator, 
+                                                                    Animator.StringToHash(Part1_SpecialAttackAnimName), 
+                                                                    LandAttackCollider, audioSource, Part1_SpecialAttackAudioClip));
+        SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part2, new LandAttack_Attack(LandAttackType.SpecialAttack_Part2,
+                                                                    LandAttackType.LandAttack1_Attack, girlData, animator, 
+                                                                    Animator.StringToHash(Part2_SpecialAttackAnimName), 
+                                                                    LandAttackCollider, audioSource, Part2_SpecialAttackAudioClip));
+        SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_End, new LandAttack_End(girlData, animator, Animator.StringToHash(SpecialAttackEndAnimName), 1f));
+
+        //进入转换
+            SpecialAttackStateMachine.AddTransition(LandAttackType.SpecialAttack_Enter, LandAttackType.BothBeatCheck);
+
+        // 双节拍检测转换
+            SpecialAttackStateMachine.AddTransition(LandAttackType.BothBeatCheck, LandAttackType.SpecialAttack_Part1, 
+                                                                t => beatManager.CurrentBeatResult == BeatResult.Good);
+            
+        //part1 -> part2
+            SpecialAttackStateMachine.AddTransition(LandAttackType.SpecialAttack_Part1, LandAttackType.SpecialAttack_Part2);
+        //part2 -> 结束
+            SpecialAttackStateMachine.AddTransition(LandAttackType.SpecialAttack_Part2, LandAttackType.SpecialAttack_End);
+
+        SpecialAttackStateMachine.SetStartState(LandAttackType.SpecialAttack_Enter);
     }
 
     private void Build_InteractingMachine()

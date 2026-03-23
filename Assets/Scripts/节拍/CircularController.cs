@@ -133,6 +133,16 @@ public class CircularController : MonoBehaviour
             }
         }
 
+        switch (BeatType)
+        {
+            case BeatCheckType.JBeatCheck:
+                Debug.Log($"J节拍检测结果：{beatManager.JBeatCheckResult}");
+                break;
+            case BeatCheckType.KBeatCheck:
+                Debug.Log($"K节拍检测结果：{beatManager.KBeatCheckResult}");
+                break;
+        }
+
         gameObject.SetActive(false);
     }
 }

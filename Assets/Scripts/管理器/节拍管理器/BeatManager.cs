@@ -80,7 +80,11 @@ public class BeatManager : Singleton<BeatManager>
             {
                 JBeatCheckResultAction?.Invoke(jBeatCheckResult);
             }
-            currentBeatResult = jBeatCheckResult;
+            
+            if(currentBeatCheckType == BeatCheckType.JBeatCheck)
+            {
+                CurrentBeatResult = jBeatCheckResult;
+            }
         }
     }
     #endregion
@@ -110,7 +114,10 @@ public class BeatManager : Singleton<BeatManager>
             {
                 KBeatCheckResultAction?.Invoke(kBeatCheckResult);
             }
-            currentBeatResult = kBeatCheckResult;
+            if(currentBeatCheckType == BeatCheckType.KBeatCheck)
+            {
+                CurrentBeatResult = kBeatCheckResult;
+            }
         }
     }
     #endregion
@@ -138,7 +145,7 @@ public class BeatManager : Singleton<BeatManager>
     {
         if(CharacterReadyForBeatCheck)
         {
-            currentBeatResult = BeatResult.none;
+            CurrentBeatResult = BeatResult.none;
             switch (BeackTypr)
             {
                 case BeatCheckType.JBeatCheck:
@@ -167,7 +174,7 @@ public class BeatManager : Singleton<BeatManager>
             currentBeatCheckType = BeatCheckType.BothCheck;
             JBeatCheckResult = BeatResult.none;
             KBeatCheckResult = BeatResult.none;
-            currentBeatResult = BeatResult.none;
+            CurrentBeatResult = BeatResult.none;
             coroutineManager.Run("WaitJKBeatCheckResult", WaitJKBeatCheckResult());
             BothBeatStartCheckAction?.Invoke(FirstCheckType, interval);
         }
@@ -179,14 +186,15 @@ public class BeatManager : Singleton<BeatManager>
     private IEnumerator WaitJKBeatCheckResult()
     {
         yield return new WaitUntil(() => JBeatCheckResult != BeatResult.none && KBeatCheckResult != BeatResult.none);
+
         if(JBeatCheckResult == BeatResult.Good && KBeatCheckResult == BeatResult.Good)
         {
-            currentBeatResult = BeatResult.Good;
+            CurrentBeatResult = BeatResult.Good;
             BothBeatCheckResultAction?.Invoke(BeatResult.Good);
         }
         else
         {
-            currentBeatResult = BeatResult.Miss;
+            CurrentBeatResult = BeatResult.Miss;
             BothBeatCheckResultAction?.Invoke(BeatResult.Miss);
         }
     }

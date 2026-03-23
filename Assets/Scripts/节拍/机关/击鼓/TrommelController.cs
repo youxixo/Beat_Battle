@@ -9,7 +9,7 @@ public class TrommelController : MonoBehaviour
     [SerializeField] private CinemachineCamera TrommelCamera;
     [SerializeField] private Transform CharacterStandTransform;
     [SerializeField] private TextMeshProUGUI NumberText;
-    [SerializeField] private int NumberOfHitsToWin = 5;
+    [SerializeField] private BeatType[] BeatTypes;
     [SerializeField] private int CurrentHits = 0;
     [SerializeField] private GameObject Door;
     [SerializeField]private UnityEvent WhenPlayerCloseToTrommel;
@@ -28,13 +28,13 @@ public class TrommelController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        NumberText.text = $"{CurrentHits}/{NumberOfHitsToWin}";
+        NumberText.text = $"{CurrentHits}/{BeatTypes.Length}";
     }
 
     void OnTriggerEnter(Collider other)
     {
         // 如果已经完成击鼓，直接返回，避免误触进入事件
-        if(CurrentHits >= NumberOfHitsToWin) return;
+        if(CurrentHits >= BeatTypes.Length) return;
 
         if (other.CompareTag("Player"))
         {
@@ -89,10 +89,10 @@ public class TrommelController : MonoBehaviour
         if (beatResult == BeatResult.Good)
         {
             CurrentHits++;
-            NumberText.text = $"{CurrentHits}/{NumberOfHitsToWin}";
+            NumberText.text = $"{CurrentHits}/{BeatTypes.Length}";
         }
 
-        if(CurrentHits >= NumberOfHitsToWin)
+        if(CurrentHits >= BeatTypes.Length)
         {
             // 胜利
             Finish();
@@ -123,6 +123,13 @@ public class TrommelController : MonoBehaviour
     IEnumerator ResetBeatCheckCoroutine()
     {
         yield return new WaitUntil(() => beatManager.CharacterReadyForBeatCheck);
-        beatManager.StartBeatCheckAction?.Invoke();
+        if(BeatTypes[CurrentHits].BeatCheckType == BeatCheckType.BothCheck)
+        {
+            beatManager.StartBothBeatCheck(BeatTypes[CurrentHits].FirstBeatCheckType, BeatTypes[CurrentHits].IntervalBetweenTwoBeats);
+        }
+        else
+        {
+            beatManager.StartBeatCheck(BeatTypes[CurrentHits].BeatCheckType);
+        }
     }
 }

@@ -8,7 +8,7 @@ public class MetronomeController : MonoBehaviour
     [SerializeField] private GameObject BeatNotFixedEffect;
     [SerializeField] private Transform CharacterStandTransform;
     [SerializeField] private CinemachineCamera MetronomeCamera;
-    [SerializeField] private PointBeatController[] BeatPoints;
+    [SerializeField,ChineseLabel("节拍点")] private MetronomePoint[] Points;
     
     [SerializeField] private UnityEvent WhenPlayClose;
     [SerializeField] private UnityEvent WhenPlayLeaved;
@@ -53,6 +53,8 @@ public class MetronomeController : MonoBehaviour
         {
             beatManager.BeatCheckResultAction -= HitChecker;
         }
+
+
     }
 
     void OnTriggerEnter(Collider other)
@@ -84,7 +86,7 @@ public class MetronomeController : MonoBehaviour
     /// </summary>
     public void StartMetronomeInteraction()
     {
-        if (currentBeatPointIndex >= BeatPoints.Length) return;
+        if (currentBeatPointIndex >= Points.Length) return;
 
         Girl_Data currentCharacterData = characterManager.GetCurrentCharacterData;
 
@@ -113,7 +115,8 @@ public class MetronomeController : MonoBehaviour
     /// </summary>
     private void HitChecker(BeatResult beatResult)
     {
-        PointBeatController currentBeatPoint = BeatPoints[currentBeatPointIndex];
+        MetronomePoint currentPoint = Points[currentBeatPointIndex];
+        PointBeatController currentBeatPoint = currentPoint.PointBeatController;
         if(currentBeatPoint.GetBeatPointState == BeatPointType.Bad)
         {
             WhenPlayerHitBadBeat();
@@ -125,7 +128,7 @@ public class MetronomeController : MonoBehaviour
             currentBeatPointIndex++;
             currentBeatPoint.HitPoint();
 
-            if(currentBeatPointIndex >= BeatPoints.Length)
+            if(currentBeatPointIndex >= Points.Length)
             {
                 FinishInteraction();
                 WhenPlayerFinishBeat();
@@ -166,11 +169,11 @@ public class MetronomeController : MonoBehaviour
     private void ResetBeatCheck()
     {
         currentBeatPointIndex = 0;
-        foreach (var beatPoint in BeatPoints)
+        foreach (var beatPoint in Points)
         {
-            if(beatPoint.GetBeatPointState == BeatPointType.Hited)
+            if(beatPoint.PointBeatController.GetBeatPointState == BeatPointType.Hited)
             {
-                beatPoint.ChangeState(BeatPointType.Good);
+                beatPoint.PointBeatController.ChangeState(BeatPointType.Good);
             }
         }
         IsInteracting = false;
@@ -204,7 +207,14 @@ public class MetronomeController : MonoBehaviour
     IEnumerator ResetBeatCheckCoroutine()
     {
         yield return new WaitUntil(() => beatManager.CharacterReadyForBeatCheck);
-        beatManager.StartBeatCheckAction?.Invoke();
+        if(Points[currentBeatPointIndex].beatType.BeatCheckType == BeatCheckType.BothCheck)
+        {
+            beatManager.StartBothBeatCheck(Points[currentBeatPointIndex].beatType.FirstBeatCheckType, Points[currentBeatPointIndex].beatType.IntervalBetweenTwoBeats);
+        }
+        else
+        {
+            beatManager.StartBeatCheck(Points[currentBeatPointIndex].beatType.BeatCheckType);
+        }
     }
 
     IEnumerator OpenBeatNotFixedEffect()

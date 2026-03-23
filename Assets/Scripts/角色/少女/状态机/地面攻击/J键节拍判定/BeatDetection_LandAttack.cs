@@ -36,6 +36,7 @@ public class BeatDetection_LandAttack : CharacterState<LandAttackType>
 
         // 禁止输入攻击
         girlData.SetAttackTapInputWindow(false);
+        girlData.SetDodgeInputWindow(false);
 
         beatManager?.SetCharacterReadyForBeatCheck(true); // 设置角色准备好进行节拍检测
         beatManager?.StartBeatCheck(BeatCheckType.JBeatCheck);
@@ -63,7 +64,7 @@ public class BeatDetection_LandAttack : CharacterState<LandAttackType>
         beatManager?.SetCharacterReadyForBeatCheck(false); // 退出状态时重置角色节拍检测准备状态
 
         girlData?.SetAttackTapInputWindow(true); // 恢复攻击输入窗口
-
+        girlData?.SetDodgeInputWindow(true); // 恢复闪避输入窗口
         // 宣布节拍检测结束，触发相关事件
         beatManager?.StopBeatCheckAction?.Invoke();
     }
