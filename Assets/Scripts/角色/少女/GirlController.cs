@@ -8,9 +8,6 @@ public class GirlController : MonoBehaviour
     [SerializeField] private CharacterController characterController;
     [SerializeField] private GirlCheckGround girlCheckGround;
 
-    [Header("音频组件")]
-    [SerializeField] private AudioSource audioSource;
-
     [Header("动画组件")]
     [SerializeField] private Animator animator;
 
@@ -56,6 +53,14 @@ public class GirlController : MonoBehaviour
     [Header("音效")]
     [SerializeField] private AudioClip Attack2AudioClip;
 
+    [Header("招式2 ->招式3")]
+
+    /// <summary>
+    /// 招式2 ->招式3
+    /// 单判成功出现的音效
+    /// </summary>
+    [SerializeField, ChineseLabel("单判成功音效")] private AudioClip Single_JudgeHFX;
+
     [Header("招式3")]
     [SerializeField] private SpherePainter LandAttack3MaxMoveDistanceRadius;
     [SerializeField] private SpherePainter LandAttack3Radius;
@@ -67,6 +72,10 @@ public class GirlController : MonoBehaviour
     [SerializeField] private AudioClip Attack3AudioClip;
 
     [Header("特殊攻击")]
+
+    [Header("双判音效")]
+    [SerializeField,ChineseLabel("第一个节拍单判成功音效")] private AudioClip FirstBeatSingleJudgeAudioClip;
+    [SerializeField,ChineseLabel("第二个节拍单判成功音效")] private AudioClip SecondBeatSingleJudgeAudioClip;
 
     [Header("阶段1")]
     [SerializeField] private SpherePainter SpecialAttackMaxMoveDistanceRadius;
@@ -104,6 +113,7 @@ public class GirlController : MonoBehaviour
     private StateMachine<GirlStateType, LandAttackType, InputEvent> SpecialAttackStateMachine = new();
 
     private bool isGround => girlCheckGround.GetIsGround;
+    private AudioSource[] audioSource;
 
     private InputManager inputManager => InputManager.Instance;
     private CharacterManager characterManager => CharacterManager.Instance;
@@ -115,6 +125,9 @@ public class GirlController : MonoBehaviour
 
     private void Awake()
     {
+        AudioSource[] sources = animator.GetComponents<AudioSource>();
+        audioSource = sources.Length > 0 ? sources : new AudioSource[1] { animator.gameObject.AddComponent<AudioSource>() };
+
         characterManager.SetCurrentCharacterData(girlData);
 
         Build_JumpUpMachine();
@@ -182,7 +195,7 @@ public class GirlController : MonoBehaviour
         GirlRootStateMachine.AddState(GirlStateType.LandAttackMachine, LandAttackStateMachine);
         GirlRootStateMachine.AddState(GirlStateType.LandDodge, new LandDodge_Girl(animator, characterController, girlData, 
                                                                     Dodge_Front_AnimName, Dodge_Back_AnimName, 
-                                                                    audioSource, F_DodgeAudioClip, A_DodgeAudioClip));
+                                                                    this,  F_DodgeAudioClip, A_DodgeAudioClip));
         GirlRootStateMachine.AddState(GirlStateType.InteractingMachine, InteractingStateMachine);
         GirlRootStateMachine.AddState(GirlStateType.SpecialAttackMachine, SpecialAttackStateMachine);
 
@@ -287,7 +300,7 @@ public class GirlController : MonoBehaviour
                                                                                                 girlData, animator, 
                                                                                                 Animator.StringToHash(Attack1WorkingAnimName), 
                                                                                                 LandAttackCollider,
-                                                                                                audioSource, Attack1AudioClip));
+                                                                                                this, Attack1AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack1_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack1EndAnimName), 1f));
     
@@ -300,13 +313,13 @@ public class GirlController : MonoBehaviour
                                                                             girlData, animator, 
                                                                             Animator.StringToHash(Attack2WorkingAnimName), 
                                                                             LandAttackCollider,
-                                                                            audioSource, Attack2AudioClip));
+                                                                            this, Attack2AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack2_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack2EndAnimName), 1f));
 
         // J节拍地面攻击检测状态
-        LandAttackStateMachine.AddState(LandAttackType.LandAttack_JBeatCheck, new BeatDetection_LandAttack(animator, girlData, 
-                                                                                                            BeatCheckType.JBeatCheck));
+        LandAttackStateMachine.AddState(LandAttackType.LandAttack_JBeatCheck, new BeatDetection_LandAttack(this,animator, girlData, 
+                                                                                                            BeatCheckType.JBeatCheck, Single_JudgeHFX));
 
         // 结算表演值状态
         LandAttackStateMachine.AddState(LandAttackType.SetShowValue, new SettleShowValue_LandAttack(girlData));
@@ -320,7 +333,7 @@ public class GirlController : MonoBehaviour
                                                                                                 girlData, animator, 
                                                                                                 Animator.StringToHash(Attack3WorkingAnimName), 
                                                                                                 LandAttackCollider,
-                                                                                                audioSource, Attack3AudioClip));
+                                                                                                this, Attack3AudioClip));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack3_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack3EndAnimName), 1f));     
 
@@ -409,18 +422,19 @@ public class GirlController : MonoBehaviour
     private void Build_SpecialAttackMachine()
     {
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Enter, new SpecialAttack_Enter(girlData));
-        SpecialAttackStateMachine.AddState(LandAttackType.BothBeatCheck, new BeatDetection_LandAttack(animator, girlData,
+        SpecialAttackStateMachine.AddState(LandAttackType.BothBeatCheck, new BeatDetection_LandAttack(this,animator, girlData,
                                                                                                     BeatCheckType.BothCheck,
+                                                                                                    FirstBeatSingleJudgeAudioClip,
                                                                                                     BeatCheckType.JBeatCheck,
-                                                                                                    1f));
+                                                                                                    1f, SecondBeatSingleJudgeAudioClip));
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part1, new LandAttack_Attack(LandAttackType.SpecialAttack_Part1, 
                                                                     LandAttackType.LandAttack1_Attack, girlData, animator, 
                                                                     Animator.StringToHash(Part1_SpecialAttackAnimName), 
-                                                                    LandAttackCollider, audioSource, Part1_SpecialAttackAudioClip));
+                                                                    LandAttackCollider, this, Part1_SpecialAttackAudioClip));
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part2, new LandAttack_Attack(LandAttackType.SpecialAttack_Part2,
                                                                     LandAttackType.LandAttack1_Attack, girlData, animator, 
                                                                     Animator.StringToHash(Part2_SpecialAttackAnimName), 
-                                                                    LandAttackCollider, audioSource, Part2_SpecialAttackAudioClip));
+                                                                    LandAttackCollider, this, Part2_SpecialAttackAudioClip));
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_End, new LandAttack_End(girlData, animator, Animator.StringToHash(SpecialAttackEndAnimName), 1f));
 
         //进入转换
@@ -449,6 +463,21 @@ public class GirlController : MonoBehaviour
 
         InteractingStateMachine.SetStartState(InteractingType.InteractingReady);
     }
+
+    #region 播放攻击音效
+    private int currentAttackAudioIndex = 0;
+
+    public void PlayAttackAudio(AudioClip clip)
+    {
+        if (clip == null) return;
+
+        audioSource[currentAttackAudioIndex].Stop();
+        audioSource[currentAttackAudioIndex].clip = clip;
+        audioSource[currentAttackAudioIndex].Play();
+        currentAttackAudioIndex = (currentAttackAudioIndex + 1) % audioSource.Length;
+    }
+
+    #endregion
 
     #region 输入事件
 

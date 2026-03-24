@@ -316,11 +316,15 @@ public class MultiTimerManager : Singleton<MultiTimerManager>
     private void Update()
     {
         float deltaTime = Time.deltaTime;
+
+        // 更新前进计时器
         foreach (var timer in M_UpTimers)
         {
             UpTimer t = timer.Value;
             t.UpdateTimer(deltaTime);
         }
+
+        // 更新倒计时器
         foreach (var timer in M_DownTimers)
         {
             DownTimer t = timer.Value;

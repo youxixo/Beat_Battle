@@ -16,6 +16,7 @@ public class TrommelController : MonoBehaviour
     [SerializeField]private UnityEvent WhenPlayerStartHitTrommel;
     [SerializeField]private UnityEvent WhenPlayerLeaveTrommel;
 
+    private AudioSource[] audioSources;
     private bool IsInteracting = false;
     private InputManager inputManager => InputManager.Instance;
     private CameraManager cameraManager => CameraManager.Instance;
@@ -28,6 +29,12 @@ public class TrommelController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
+        audioSources = GetComponents<AudioSource>();
+        if (audioSources.Length == 0)
+        {
+            Debug.LogError("没有找到AudioSource组件！");
+            return;
+        }
         NumberText.text = $"{CurrentHits}/{BeatTypes.Length}";
     }
 
@@ -86,6 +93,12 @@ public class TrommelController : MonoBehaviour
 
     private void HitChecker(BeatResult beatResult)
     {
+        // 取消之前注册的节拍检测结果事件，避免重复触发
+        beatManager.JBeatCheckResultAction -= Play_First_AudioClip;
+        beatManager.KBeatCheckResultAction -= Play_First_AudioClip;
+        beatManager.JBeatCheckResultAction -= Play_Second_AudioClip;
+        beatManager.KBeatCheckResultAction -= Play_Second_AudioClip;
+
         if (beatResult == BeatResult.Good)
         {
             CurrentHits++;
@@ -122,6 +135,30 @@ public class TrommelController : MonoBehaviour
 
     IEnumerator ResetBeatCheckCoroutine()
     {
+        switch(BeatTypes[CurrentHits].BeatCheckType)
+        {
+            case BeatCheckType.JBeatCheck:
+                beatManager.JBeatCheckResultAction += Play_First_AudioClip;
+                break;
+            case BeatCheckType.KBeatCheck:
+                beatManager.KBeatCheckResultAction += Play_First_AudioClip;
+                break;
+            case BeatCheckType.BothCheck:
+                switch (BeatTypes[CurrentHits].FirstBeatCheckType)                
+                {
+                    case BeatCheckType.JBeatCheck:
+                        beatManager.JBeatCheckResultAction += Play_First_AudioClip;
+                        beatManager.KBeatCheckResultAction += Play_Second_AudioClip;
+                        break;      
+                    case BeatCheckType.KBeatCheck:
+                        beatManager.KBeatCheckResultAction += Play_First_AudioClip;
+                        beatManager.JBeatCheckResultAction += Play_Second_AudioClip;
+                        break;
+                }
+                break;  
+        }
+
+
         yield return new WaitUntil(() => beatManager.CharacterReadyForBeatCheck);
         if(BeatTypes[CurrentHits].BeatCheckType == BeatCheckType.BothCheck)
         {
@@ -130,6 +167,41 @@ public class TrommelController : MonoBehaviour
         else
         {
             beatManager.StartBeatCheck(BeatTypes[CurrentHits].BeatCheckType);
+        }
+    }
+
+    private int currentBeatIndex = 0;
+    ///<summary>
+    /// 播放第一个音效
+    /// </summary>
+    public void Play_First_AudioClip(BeatResult beatResult)
+    {
+        if(beatResult == BeatResult.Good)
+        {
+            if (audioSources.Length > 0)
+            {
+                audioSources[currentBeatIndex].Stop();
+                audioSources[currentBeatIndex].clip = BeatTypes[CurrentHits].BeatAudioClip;
+                audioSources[currentBeatIndex].Play();
+                currentBeatIndex = (currentBeatIndex + 1) % audioSources.Length;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 播放第二个音效
+    /// </summary>
+    public void Play_Second_AudioClip(BeatResult beatResult)
+    {
+        if(beatResult == BeatResult.Good)
+        {
+            if (audioSources.Length > 0)
+            {
+                audioSources[currentBeatIndex].Stop();
+                audioSources[currentBeatIndex].clip = BeatTypes[CurrentHits].SecondBeatAudioClip;
+                audioSources[currentBeatIndex].Play();
+                currentBeatIndex = (currentBeatIndex + 1) % audioSources.Length;
+            }
         }
     }
 }

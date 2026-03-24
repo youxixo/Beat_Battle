@@ -201,6 +201,44 @@ public class BeatManager : Singleton<BeatManager>
 
     #endregion
 
+    #region BGM节拍事件
+    [SerializeField] private bool isBGMInBeat = false;
+
+    /// <summary>
+    /// BGM节拍事件
+    /// </summary>
+    public Action BGMBeatAction;
+
+    /// <summary>
+    /// BGM非节拍事件
+    /// </summary>
+    public Action BGMNotBeatAction;
+
+    /// <summary>
+    /// BGM是否在节拍中
+    /// </summary>
+    public bool IsBGMInBeat
+    {
+        get => isBGMInBeat;
+        set
+        {
+            isBGMInBeat = value;
+            if(isBGMInBeat)
+            {
+                BGMBeatAction?.Invoke();
+            }
+            else
+            {
+                BGMNotBeatAction?.Invoke();
+            }
+        }
+    }
+
+    
+
+
+    #endregion
+
 
 
     /// <summary>

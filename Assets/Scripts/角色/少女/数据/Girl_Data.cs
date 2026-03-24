@@ -9,16 +9,16 @@ public class Girl_Data : MonoBehaviour
 
     [Header("移动属性")]
     #region 移动属性
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField, ChineseLabel("移动速度")] private float moveSpeed = 5f;
     public float GetMoveSpeed => moveSpeed;
 
-    [SerializeField] private float RotateSpeed = 720f;
+    [SerializeField, ChineseLabel("旋转速度")] private float RotateSpeed = 720f;
     public float GetRotateSpeed => RotateSpeed;
     #endregion
 
     [Header("跳跃属性")]
     #region 跳跃属性
-    [SerializeField] private float jumpForce = 50f;
+    [SerializeField, ChineseLabel("跳跃力大小")] private float jumpForce = 50f;
     public float GetJumpForce => jumpForce;
     /// <summary>
     /// 当前Y轴速度
@@ -33,8 +33,8 @@ public class Girl_Data : MonoBehaviour
     {
         currentYVelocity = velocity;
     }
-    [SerializeField] private int maxJumpCount = 2;
-    [SerializeField]private int currentJumpCount = 0;
+    [SerializeField, ChineseLabel("跳跃上限")] private int maxJumpCount = 2;
+    [SerializeField, ChineseLabel("当前跳跃次数")] private int currentJumpCount = 0;
 
     public int GetCurrentJumpCount => currentJumpCount;
     public void SetCurrentJumpCount(int count)
@@ -53,13 +53,14 @@ public class Girl_Data : MonoBehaviour
 
     #region 闪避属性
     [Header("闪避属性")]
-    [SerializeField] private float dodgeDistance = 5f;
+    [SerializeField, ChineseLabel("闪避距离")] private float dodgeDistance = 5f;
     public float GetDodgeDistance => dodgeDistance;
 
+    [Header("闪避次数：决定表演值增加量")]
     /// <summary>
     /// 闪避次数，决定表演值增加量
     /// </summary>
-    [SerializeField] private int dodgeValue = 0;
+    [SerializeField, ChineseLabel("一套攻击内的闪避次数")] private int dodgeValue = 0;
 
     /// <summary>
     /// 获取当前闪避次数
@@ -88,10 +89,12 @@ public class Girl_Data : MonoBehaviour
         IsLandAttacking = value;
     }
 
+    [Space(10)]
+    [Header("地面攻击招式的保质期，如果在这个时间内没有接续招式，则重置为初始招式")]
     /// <summary>
     /// 地面攻击招式的持续时间，超过这个时间后会自动重置为初始招式
     /// </summary>
-    [SerializeField] private float landAttackEx = 2f;
+    [SerializeField, ChineseLabel("地面攻击招式的有效期")] private float landAttackEx = 2f;
 
 
     private LandAttackType CurrentLandAttackType = LandAttackType.LandAttack1_Start;
@@ -104,7 +107,7 @@ public class Girl_Data : MonoBehaviour
         CurrentLandAttackType = type;
     }
     
-    [SerializeField] private LandAttackType nextLandAttackType = LandAttackType.LandAttack1_Start;
+    [SerializeField, ChineseLabel("下一个地面攻击招式类型")] private LandAttackType nextLandAttackType = LandAttackType.LandAttack1_Start;
     public LandAttackType NextLandAttackType
     {
         set
@@ -127,7 +130,7 @@ public class Girl_Data : MonoBehaviour
     #endregion
 
     #region 交互事件
-    [SerializeField] private bool isInteracting = false;
+    [SerializeField, ChineseLabel("是否正在交互状态")] private bool isInteracting = false;
 
     /// <summary>
     /// 是否要进行交互状态
@@ -145,7 +148,7 @@ public class Girl_Data : MonoBehaviour
     /// <summary>
     /// 短按攻击输入窗口
     /// </summary>
-    [SerializeField] private bool attackTapInputWindow = true;
+    [SerializeField, ChineseLabel("短按攻击输入窗口")] private bool attackTapInputWindow = true;
 
     /// <summary>
     /// 获取短按攻击输入窗口状态
@@ -159,7 +162,7 @@ public class Girl_Data : MonoBehaviour
     /// <summary>
     /// 长按攻击输入窗口
     /// </summary>
-    [SerializeField] private bool attackHoldInputWindow = true;
+    [SerializeField, ChineseLabel("长按攻击输入窗口")] private bool attackHoldInputWindow = true;
     /// <summary>
     /// 获取长按攻击输入窗口状态
     /// </summary>
@@ -172,7 +175,7 @@ public class Girl_Data : MonoBehaviour
     /// <summary>
     /// 跳跃输入窗口
     /// </summary>
-    [SerializeField] private bool jumpInputWindow = true;
+    [SerializeField, ChineseLabel("跳跃输入窗口")] private bool jumpInputWindow = true;
     /// <summary>
     /// 获取跳跃输入窗口状态
     /// </summary>
@@ -185,7 +188,7 @@ public class Girl_Data : MonoBehaviour
     /// <summary>
     /// 闪避输入窗口
     /// </summary>
-    [SerializeField] private bool dodgeInputWindow = true;
+    [SerializeField, ChineseLabel("闪避输入窗口")] private bool dodgeInputWindow = true;
     /// <summary>
     /// 获取闪避输入窗口状态
     /// </summary>
@@ -196,7 +199,7 @@ public class Girl_Data : MonoBehaviour
     }
 
     /// 移动输入窗口
-    [SerializeField] private bool moveInputWindow = true;
+    [SerializeField, ChineseLabel("移动输入窗口")] private bool moveInputWindow = true;
     /// <summary>
     /// 获取移动输入窗口状态
     /// </summary>
@@ -209,10 +212,10 @@ public class Girl_Data : MonoBehaviour
 
     #region 表现值
     [Header("表现值")]
-    [SerializeField] private int MaxShowValue = 5;
+    [SerializeField, ChineseLabel("最大表现值")] private int MaxShowValue = 5;
     public int GetMaxShowValue => MaxShowValue;
-    [SerializeField] private int currentShowValue = 0;
-    public UnityEvent<float> ShowValueChangeAction;
+    [SerializeField, ChineseLabel("当前表现值")] private int currentShowValue = 0;
+    [ChineseLabel("当表现值改变时触发")]public UnityEvent<float> ShowValueChangeAction;
     public int CurrentShowValue
     {
         get => currentShowValue;

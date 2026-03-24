@@ -10,7 +10,7 @@ public class LandDodge_Girl : CharacterState<GirlStateType>
 
     private CharacterController character;
     private Girl_Data girlData;
-    private AudioSource audioSource;
+    private GirlController characterController;
     private AudioClip F_DodgeAudioClip;
     private AudioClip A_DodgeAudioClip;
 
@@ -35,7 +35,7 @@ public class LandDodge_Girl : CharacterState<GirlStateType>
                         Girl_Data girlData,
                         string dodgeFrontAnimName, 
                         string dodgeBackAnimName,
-                        AudioSource audioSource,
+                        GirlController characterController,
                         AudioClip F_DodgeAudioClip,
                         AudioClip A_DodgeAudioClip):base(needsExitTime: true, canExit: (state) => ((LandDodge_Girl)state).AniFinsh)
     {
@@ -46,7 +46,7 @@ public class LandDodge_Girl : CharacterState<GirlStateType>
         this.character = character;
         this.girlData = girlData;
 
-        this.audioSource = audioSource;
+        this.characterController = characterController;
         this.F_DodgeAudioClip = F_DodgeAudioClip;
         this.A_DodgeAudioClip = A_DodgeAudioClip;
     }
@@ -81,15 +81,11 @@ public class LandDodge_Girl : CharacterState<GirlStateType>
         // 播放闪避音效
         if(girlData.GetCurrentLandAttackType == LandAttackType.LandAttack2_Attack)
         {
-            audioSource.Stop();
-            audioSource.clip = A_DodgeAudioClip;
-            audioSource.Play();
+            characterController.PlayAttackAudio(A_DodgeAudioClip);
         }
         else if(girlData.GetCurrentLandAttackType == LandAttackType.LandAttack1_Attack)
         {
-            audioSource.Stop();
-            audioSource.clip = F_DodgeAudioClip;
-            audioSource.Play();
+            characterController.PlayAttackAudio(F_DodgeAudioClip);
         }
     }
 

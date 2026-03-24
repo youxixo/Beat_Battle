@@ -10,8 +10,7 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
     private Girl_Data girlData;
     private bool animationFinished = false;
     private Collider landAttackCollider;
-
-    private AudioSource audioSource;
+    private GirlController characterController;
     private AudioClip attackAudioClip;
 
     public LandAttack_Attack(LandAttackType currentLandAttackType, 
@@ -20,7 +19,7 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
                             Animator animator, 
                             int attackAnimationHash, 
                             Collider landAttackCollider,
-                            AudioSource audioSource,
+                            GirlController characterController,
                             AudioClip attackAudioClip
                             ):base(needsExitTime: true,
                                     canExit: state => ((LandAttack_Attack)state).animationFinished)
@@ -31,7 +30,7 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
         this.animator = animator;
         this.AttackAnimationHash = attackAnimationHash;
         this.landAttackCollider = landAttackCollider;
-        this.audioSource = audioSource;
+        this.characterController = characterController;
         this.attackAudioClip = attackAudioClip;
     }
 
@@ -40,14 +39,18 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
         base.OnEnter();
         girlData.SetAttackTapInputWindow(false);
         girlData.SetMoveInputWindow(false);
+        girlData.SetCurrentLandAttackType(currentLandAttackType);
+        girlData.NextLandAttackType = nextLandAttackType;
+        girlData.SetIsLandAttacking(true);
 
         inputManager.AttackExpire = false; // 重置攻击输入保质期
         
         
-        girlData.SetCurrentLandAttackType(currentLandAttackType);
-        girlData.NextLandAttackType = nextLandAttackType;
+        if(beatManager.IsBGMInBeat)
+        {
+            girlData.CurrentShowValue ++;
+        }
 
-        girlData.SetIsLandAttacking(true);
         landAttackCollider.enabled = true;
 
         animationFinished = false;
@@ -55,9 +58,7 @@ public class LandAttack_Attack : CharacterState<LandAttackType>
         animator.Play(AttackAnimationHash);
         coroutineManager.Run("LandAttack_Attack_Girl", AttackCoroutine());
 
-        audioSource.Stop();
-        audioSource.clip = attackAudioClip;
-        audioSource.Play();
+        characterController.PlayAttackAudio(attackAudioClip);
     }
 
     public override void OnExit()
