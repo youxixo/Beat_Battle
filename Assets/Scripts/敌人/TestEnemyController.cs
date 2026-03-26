@@ -7,8 +7,8 @@ public class TestEnemyController : MonoBehaviour
     {
         if (other.CompareTag("PlayerHitBox"))
         {
-            bool isAttack3 = girlData.GetCurrentLandAttackType == LandAttackType.LandAttack3_Attack;
-            if(isAttack3)
+            bool isSpecialAttack = girlData.GetCurrentLandAttackType == LandAttackType.SpecialAttack_Part1 || girlData.GetCurrentLandAttackType == LandAttackType.SpecialAttack_Part2;
+            if(isSpecialAttack)
             {
                 Destroy(gameObject);
             }

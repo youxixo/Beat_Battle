@@ -18,6 +18,7 @@ public class MetronomeController : MonoBehaviour
 
     private int currentBeatPointIndex = 0;
     private bool IsInteracting = false;
+    private AudioSource[] audioSources;
 
     private InputManager inputManager => InputManager.Instance;
     private CameraManager cameraManager => CameraManager.Instance;
@@ -27,6 +28,12 @@ public class MetronomeController : MonoBehaviour
 
     private void Awake()
     {
+        audioSources = GetComponents<AudioSource>();
+        if (audioSources.Length == 0)
+        {
+            Debug.LogError("没有找到AudioSource组件！");
+            return;
+        }
         BeatNotFixedEffect?.SetActive(false);
     }
 
@@ -53,8 +60,6 @@ public class MetronomeController : MonoBehaviour
         {
             beatManager.BeatCheckResultAction -= HitChecker;
         }
-
-
     }
 
     void OnTriggerEnter(Collider other)
@@ -115,6 +120,11 @@ public class MetronomeController : MonoBehaviour
     /// </summary>
     private void HitChecker(BeatResult beatResult)
     {
+        beatManager.JBeatCheckResultAction -= Play_First_AudioClip;
+        beatManager.KBeatCheckResultAction -= Play_First_AudioClip;
+        beatManager.JBeatCheckResultAction -= Play_Second_AudioClip;
+        beatManager.KBeatCheckResultAction -= Play_Second_AudioClip;
+
         MetronomePoint currentPoint = Points[currentBeatPointIndex];
         PointBeatController currentBeatPoint = currentPoint.PointBeatController;
         if(currentBeatPoint.GetBeatPointState == BeatPointType.Bad)
@@ -206,14 +216,39 @@ public class MetronomeController : MonoBehaviour
 
     IEnumerator ResetBeatCheckCoroutine()
     {
+        BeatCheckType currentBeatCheckType = Points[currentBeatPointIndex].beatType.BeatCheckType;
+        switch(currentBeatCheckType)
+        {
+            case BeatCheckType.JBeatCheck:
+                beatManager.JBeatCheckResultAction += Play_First_AudioClip;
+                break;
+            case BeatCheckType.KBeatCheck:
+                beatManager.KBeatCheckResultAction += Play_First_AudioClip;
+                break;
+            case BeatCheckType.BothCheck:
+                switch(Points[currentBeatPointIndex].beatType.FirstBeatCheckType)
+                {
+                    case BeatCheckType.JBeatCheck:
+                        beatManager.JBeatCheckResultAction += Play_First_AudioClip;
+                        beatManager.KBeatCheckResultAction += Play_Second_AudioClip;
+                        break;
+                    case BeatCheckType.KBeatCheck:
+                        beatManager.KBeatCheckResultAction += Play_First_AudioClip;
+                        beatManager.JBeatCheckResultAction += Play_Second_AudioClip;
+                        break;
+                }
+                break;
+        }
+
         yield return new WaitUntil(() => beatManager.CharacterReadyForBeatCheck);
-        if(Points[currentBeatPointIndex].beatType.BeatCheckType == BeatCheckType.BothCheck)
+
+        if(currentBeatCheckType == BeatCheckType.BothCheck)
         {
             beatManager.StartBothBeatCheck(Points[currentBeatPointIndex].beatType.FirstBeatCheckType, Points[currentBeatPointIndex].beatType.IntervalBetweenTwoBeats);
         }
         else
         {
-            beatManager.StartBeatCheck(Points[currentBeatPointIndex].beatType.BeatCheckType);
+            beatManager.StartBeatCheck(currentBeatCheckType);
         }
     }
 
@@ -222,5 +257,40 @@ public class MetronomeController : MonoBehaviour
         BeatNotFixedEffect.SetActive(true);
         yield return new WaitForSeconds(3f);
         BeatNotFixedEffect.SetActive(false);
+    }
+
+    private int currentBeatIndex = 0;
+    ///<summary>
+    /// 播放第一个音效
+    /// </summary>
+    public void Play_First_AudioClip(BeatResult beatResult)
+    {
+        if(beatResult == BeatResult.Good)
+        {
+            if (audioSources.Length > 0 && currentBeatPointIndex < Points.Length)
+            {
+                audioSources[currentBeatIndex].Stop();
+                audioSources[currentBeatIndex].clip = Points[currentBeatPointIndex].beatType.BeatAudioClip;
+                audioSources[currentBeatIndex].Play();
+                currentBeatIndex = (currentBeatIndex + 1) % audioSources.Length;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 播放第二个音效
+    /// </summary>
+    public void Play_Second_AudioClip(BeatResult beatResult)
+    {
+        if(beatResult == BeatResult.Good)
+        {
+            if (audioSources.Length > 0 && currentBeatPointIndex < Points.Length)
+            {
+                audioSources[currentBeatIndex].Stop();
+                audioSources[currentBeatIndex].clip = Points[currentBeatPointIndex].beatType.SecondBeatAudioClip;
+                audioSources[currentBeatIndex].Play();
+                currentBeatIndex = (currentBeatIndex + 1) % audioSources.Length;
+            }
+        }
     }
 }

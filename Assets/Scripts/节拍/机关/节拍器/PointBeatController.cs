@@ -13,7 +13,9 @@ public enum BeatPointType
 
 public class PointBeatController : MonoBehaviour
 {
-    [SerializeField] private BeatPointType BeatPointState;
+    [Header("选择Good，可初始化点")]
+    [Header("选择Bad，请将子类的 '未击中' 移动你想放置的位置")]
+    [SerializeField, ChineseLabel("节拍点状态")] private BeatPointType BeatPointState;
     public BeatPointType GetBeatPointState => BeatPointState;
 
     public Transform HitedPointEffect;

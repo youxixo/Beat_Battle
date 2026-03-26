@@ -7,6 +7,50 @@ public class Girl_Data : MonoBehaviour
 {
     private CoroutineManager coroutineManager => CoroutineManager.Instance;
 
+    [Header("受击数")]
+    [SerializeField, ChineseLabel("最大受击数")] private int maxHitCount = 3;
+    public int GetMaxHitCount => maxHitCount;
+    [SerializeField, ChineseLabel("当前受击数")] private int currentHitCount = 0;
+    public int CurrentHitCount
+    {
+        get => currentHitCount;
+        set
+        {
+            currentHitCount = Mathf.Clamp(value, 0, maxHitCount);
+            HitCountChangeAction?.Invoke(currentHitCount);
+
+            if (currentHitCount >= maxHitCount)
+            {
+                // 触发眩晕状态
+                IsDizziness = true;
+            }
+        }
+    }
+
+    [ChineseLabel("受击数改变事件")] public UnityEvent<float> HitCountChangeAction;
+
+
+    #region 眩晕属性
+    [Header("眩晕时间")]
+    [SerializeField, ChineseLabel("眩晕时间")] private float dizzinessTime = 1f;
+    /// <summary>
+    /// 获取眩晕时间
+    /// </summary>
+    public float GetDizzinessTime => dizzinessTime;
+
+    [SerializeField, ChineseLabel("是否处于眩晕状态")] private bool isDizziness = false;
+    /// <summary>
+    /// 获取是否处于眩晕状态    
+    /// </summary>
+    public bool IsDizziness
+    {
+        get => isDizziness;
+        set => isDizziness = value;
+    }
+
+
+    #endregion
+
     [Header("移动属性")]
     #region 移动属性
     [SerializeField, ChineseLabel("移动速度")] private float moveSpeed = 5f;

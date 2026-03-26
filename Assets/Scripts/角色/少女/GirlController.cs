@@ -22,13 +22,16 @@ public class GirlController : MonoBehaviour
     [SerializeField] private string Dodge_Back_AnimName = "Dodge_Back";
 
     [Header("闪避音效")]
-    [SerializeField] private AudioClip F_DodgeAudioClip;
-    [SerializeField] private AudioClip A_DodgeAudioClip;
+    [SerializeField,ChineseLabel("招式1后闪避音效")] private AudioClip F_DodgeAudioClip;
+    [SerializeField,ChineseLabel("招式2后闪避音效")] private AudioClip A_DodgeAudioClip;
 
     [Header("跳跃动画")]
     [SerializeField] private string JumpUpAnimName = "JumpUp";
     [SerializeField] private string JumpDownAnimName = "JumpDown";
     [SerializeField] private string JumpLandAnimName = "JumpLand";
+
+    [Header("眩晕动画")]
+    [SerializeField] private string DizzinessAnimName = "Dizziness";
 
     [Header("地面攻击")]
     [SerializeField] private Collider LandAttackCollider;
@@ -198,6 +201,7 @@ public class GirlController : MonoBehaviour
                                                                     this,  F_DodgeAudioClip, A_DodgeAudioClip));
         GirlRootStateMachine.AddState(GirlStateType.InteractingMachine, InteractingStateMachine);
         GirlRootStateMachine.AddState(GirlStateType.SpecialAttackMachine, SpecialAttackStateMachine);
+        GirlRootStateMachine.AddState(GirlStateType.Dizziness, new Dizziness_Girl(girlData, animator, DizzinessAnimName));
 
         // 待输入状态切换
         GirlRootStateMachine.AddTriggerTransition(InputEvent.Jump, GirlStateType.WaitingInput, GirlStateType.JumpUpMachine,t => girlData.CanJump);
@@ -250,8 +254,12 @@ public class GirlController : MonoBehaviour
                                             t => moveDirection != Vector3.zero && 
                                             SpecialAttackStateMachine.ActiveStateName == LandAttackType.SpecialAttack_End, forceInstantly: true);
 
+        //眩晕状态切换
+        GirlRootStateMachine.AddTransition(GirlStateType.Dizziness, GirlStateType.WaitingInput, t => !girlData.IsDizziness);
+
         //任意状态切换
         GirlRootStateMachine.AddTransitionFromAny(GirlStateType.InteractingMachine, t => girlData.IsInteracting);
+        GirlRootStateMachine.AddTransitionFromAny(GirlStateType.Dizziness, t => girlData.IsDizziness);
         GirlRootStateMachine.AddTriggerTransitionFromAny(InputEvent.AttackHold, GirlStateType.SpecialAttackMachine, 
                                                         t => isGround && !girlData.IsInteracting && 
                                                         girlData.CurrentShowValue==girlData.GetMaxShowValue, forceInstantly: true);
@@ -523,7 +531,51 @@ public class GirlController : MonoBehaviour
 
     #endregion
 
-    #if UNITY_EDITOR
+    #region 受击状态
+    void OnTriggerEnter(Collider other)
+    {
+        LandAttackType currentLandAttackType = characterManager.GetCurrentCharacterData.GetCurrentLandAttackType;
+        
+        // 如果当前正在执行地面攻击3或者特殊攻击的任一阶段，不受击
+        if(currentLandAttackType == LandAttackType.LandAttack3_Attack ||
+        currentLandAttackType == LandAttackType.SpecialAttack_Part1 ||
+        currentLandAttackType == LandAttackType.SpecialAttack_Part2)
+        {
+            return;
+        }
+
+        GirlStateType currentState = GirlRootStateMachine.ActiveStateName;
+
+        // 节拍检测时不受击
+        if(currentState == GirlStateType.Dizziness)
+        {
+            return;
+        }
+        else if(currentState == GirlStateType.LandAttackMachine)
+        {
+            if(LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack_JBeatCheck||
+                LandAttackStateMachine.ActiveStateName == LandAttackType.LandAttack3_Start)
+            {
+                return;
+            }
+        }
+        else if(currentState == GirlStateType.SpecialAttackMachine)
+        {
+            if(SpecialAttackStateMachine.ActiveStateName == LandAttackType.BothBeatCheck)
+            {
+                return;
+            }
+        }
+
+        if (other.CompareTag("EnemyHitBox"))
+        {
+            girlData.CurrentHitCount++;
+        }
+    }
+
+    #endregion
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         if (characterController == null)

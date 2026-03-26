@@ -70,8 +70,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieDate
   currentHP: 10
+  isDead: 0
   canMove: 0
-  moveSpeed: 2
+  moveSpeed: 10
   attackCooldown: 2
   attackRange: {fileID: 5238211178809658074}
 --- !u!136 &6518929805309210089
@@ -93,7 +94,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
+  m_Radius: 0.99
   m_Height: 6.68
   m_Direction: 1
   m_Center: {x: 0, y: 3.39, z: 0}
@@ -136,7 +137,7 @@ GameObject:
   - component: {fileID: 5170131779182603344}
   m_Layer: 0
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: EnemyHitBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -189,7 +190,7 @@ GameObject:
   - component: {fileID: 7158484222227427778}
   m_Layer: 0
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: EnemyHitBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

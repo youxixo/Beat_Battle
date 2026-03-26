@@ -16,6 +16,8 @@ public class TrommelController : MonoBehaviour
     [SerializeField]private UnityEvent WhenPlayerStartHitTrommel;
     [SerializeField]private UnityEvent WhenPlayerLeaveTrommel;
 
+    [SerializeField, ChineseLabel("测试模式")] private bool TestMode = false;
+
     private AudioSource[] audioSources;
     private bool IsInteracting = false;
     private InputManager inputManager => InputManager.Instance;
@@ -36,6 +38,16 @@ public class TrommelController : MonoBehaviour
             return;
         }
         NumberText.text = $"{CurrentHits}/{BeatTypes.Length}";
+    }
+
+    void Update()
+    {
+        if(!TestMode) return;
+        Transform playerTransform = characterManager.GetCurrentCharacterData ? characterManager.GetCurrentCharacterData.transform : null;
+        if (playerTransform)
+        {
+            playerTransform.SetPositionAndRotation(new Vector3(CharacterStandTransform.position.x, playerTransform.position.y, CharacterStandTransform.position.z), Quaternion.LookRotation(CharacterStandTransform.forward));
+        }
     }
 
     void OnTriggerEnter(Collider other)

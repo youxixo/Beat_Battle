@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
+
 public class BeatBridgeController : MonoBehaviour
 {
     [SerializeField] private AudioSource BeatPlayAudioSource;

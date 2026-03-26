@@ -50,6 +50,11 @@ public enum GirlStateType
     /// 特殊攻击状态机
     /// </summary>
     SpecialAttackMachine,
+
+    /// <summary>
+    /// 眩晕状态
+    /// </summary>
+    Dizziness,
 }
 
 public enum JumpUpType

@@ -29,6 +29,10 @@ public class EnemyManager : Singleton<EnemyManager>
             }
             return CurrentTargetEnemy;
         }
+        set
+        {
+            CurrentTargetEnemy = value;
+        }
     }
 
     /// <summary>
