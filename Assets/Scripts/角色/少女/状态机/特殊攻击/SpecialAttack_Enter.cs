@@ -22,7 +22,7 @@ public class SpecialAttack_Enter : CharacterState<LandAttackType>
         // 重置节拍检测结果，避免在地面攻击状态中受到之前节拍检测结果的影响
         beatManager.CurrentBeatResult = BeatResult.none;
 
-
+        dataCollectionManager.SpecialAttackTriggerCount++;
     }
 
 

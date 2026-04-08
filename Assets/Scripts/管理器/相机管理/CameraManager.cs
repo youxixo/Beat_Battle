@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraManager : Singleton<CameraManager>
 {
@@ -22,6 +24,17 @@ public class CameraManager : Singleton<CameraManager>
     /// 默认摄像机
     /// </summary>
     [SerializeField] private CinemachineCamera DefaultCamera;
+    public CinemachineCamera GetDefaultCamera
+    {
+        get
+        {
+            if (DefaultCamera == null)
+            {
+                Debug.LogError("默认摄像机未设置！");
+            }
+            return DefaultCamera;
+        }
+    }
 
     /// <summary>
     /// 战斗相机（左）
@@ -88,10 +101,60 @@ public class CameraManager : Singleton<CameraManager>
     /// </summary>
     public void SwitchToDefaultCamera()
     {
+        Girl_Data currentCharacterData = CharacterManager.Instance.GetCurrentCharacterData;
+        CinemachineOrbitalFollow orbitalFollow = DefaultCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineOrbitalFollow;
+        float playerYaw = currentCharacterData.transform.eulerAngles.y;
+
+        orbitalFollow.HorizontalAxis.Value = playerYaw; // 将默认摄像机的水平轴值设置为玩家当前的旋转角度
         if (CurrentCamera == DefaultCamera) return; // 如果当前已经是默认摄像机，则不切换
         CurrentCamera.Priority = 0; // 先将当前摄像机优先级降为0
         CurrentCamera = DefaultCamera;
         CurrentCamera.Priority = 20; // 将默认摄像机优先级设置为20，确保它成为当前激活的摄像机
+    }
+
+    [SerializeField, ChineseLabel("相机旋转速度")] private float cameraRotateSpeed = 5f;
+    /// <summary>
+    /// 默认相机顺时针旋转
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator RotateCameraClockwise()
+    {
+        if (CurrentCamera != DefaultCamera) yield break; // 只有在默认摄像机时才允许旋转
+        CinemachineOrbitalFollow orbitalFollow = DefaultCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineOrbitalFollow;
+        while (true)
+        {
+            yield return null;
+            orbitalFollow.HorizontalAxis.Value += cameraRotateSpeed * Time.deltaTime; // 顺时针旋转
+        }
+    }
+
+    /// <summary>
+    /// 默认相机逆时针旋转
+    /// </summary>
+    public IEnumerator RotateCameraCounterClockwise()
+    {
+        if (CurrentCamera != DefaultCamera) yield break; // 只有在默认摄像机时才允许旋转
+        CinemachineOrbitalFollow orbitalFollow = DefaultCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineOrbitalFollow;
+        while (true)
+        {
+            yield return null;
+            orbitalFollow.HorizontalAxis.Value -= cameraRotateSpeed * Time.deltaTime; // 逆时针旋转
+        }
+    }
+
+    /// <summary>
+    /// 鼠标控制默认相机旋转
+    /// </summary>
+    public IEnumerator MouseControlCameraRotation()
+    {
+        if (CurrentCamera != DefaultCamera) yield break; // 只有在默认摄像机时才允许旋转
+        CinemachineOrbitalFollow orbitalFollow = DefaultCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineOrbitalFollow;
+        while (true)
+        {
+            yield return null;
+            float mouseX = Mouse.current.delta.x.ReadValue();     
+            orbitalFollow.HorizontalAxis.Value += mouseX * cameraRotateSpeed * Time.deltaTime;
+        }
     }
 
 

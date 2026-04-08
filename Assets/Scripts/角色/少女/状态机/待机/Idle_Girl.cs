@@ -13,6 +13,8 @@ public class Idle_Girl : CharacterState<GirlStateType>
     public override void OnEnter()
     {
         base.OnEnter();
+        cameraManager.SwitchCamera(CameraType.DefaultCamera);
+        
         animator.Play(IdleHash);
     }
 }

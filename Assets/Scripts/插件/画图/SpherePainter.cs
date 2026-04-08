@@ -9,12 +9,15 @@ using UnityEditor;
 public class SpherePainter : MonoBehaviour
 {
     [SerializeField] private float radius = 3f;
+
+    #if UNITY_EDITOR
     [SerializeField] private Color color = Color.red;
     [SerializeField, Range(12, 120)] private int segments = 60; // 这里的 segments 决定圆环的平滑度
 
+    
     [SerializeField] private bool isDraw = true;
 
-    #if UNITY_EDITOR
+    
     private void OnDrawGizmos()
     {
         if (!isDraw) return;

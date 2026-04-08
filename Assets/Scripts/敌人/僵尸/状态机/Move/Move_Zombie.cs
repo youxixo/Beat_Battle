@@ -28,6 +28,6 @@ public class Move_Zombie : BaseState<ZombieType>
 
         zombieDate.transform.LookAt(girlData);
 
-        zombieDate.transform.position += zombieDate.transform.forward * zombieDate.MoveSpeed * Time.deltaTime;
+        zombieDate.transform.position += zombieDate.transform.forward * zombieDate.CurrentMoveSpeed * Time.deltaTime;
     }
 }

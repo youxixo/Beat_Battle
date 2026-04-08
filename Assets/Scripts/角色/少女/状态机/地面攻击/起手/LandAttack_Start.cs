@@ -82,6 +82,7 @@ public class LandAttack_Start : CharacterState<LandAttackType>
         {
             cameraManager.SwitchCamera(CameraType.BattleCamera);
         }
+        
     }
 
     public override void OnLogic()

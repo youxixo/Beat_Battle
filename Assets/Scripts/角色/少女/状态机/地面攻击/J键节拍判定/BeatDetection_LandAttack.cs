@@ -45,6 +45,7 @@ public class BeatDetection_LandAttack : CharacterState<LandAttackType>
         // 禁止输入攻击
         girlData.SetAttackTapInputWindow(false);
         girlData.SetDodgeInputWindow(false);
+        girlData.SetIsLandAttacking(true);
 
         beatManager?.SetCharacterReadyForBeatCheck(true); // 设置角色准备好进行节拍检测
         beatManager?.StartBeatCheck(BeatCheckType.JBeatCheck);
@@ -83,6 +84,7 @@ public class BeatDetection_LandAttack : CharacterState<LandAttackType>
         animator.speed = 1f;
 
         beatManager?.SetCharacterReadyForBeatCheck(false); // 退出状态时重置角色节拍检测准备状态
+        beatManager?.StopBeatCheckAction?.Invoke();
 
         if(beatManager)
         {
@@ -94,8 +96,8 @@ public class BeatDetection_LandAttack : CharacterState<LandAttackType>
 
         girlData?.SetAttackTapInputWindow(true); // 恢复攻击输入窗口
         girlData?.SetDodgeInputWindow(true); // 恢复闪避输入窗口
+        girlData?.SetIsLandAttacking(false); // 重置地面攻击状态
         // 宣布节拍检测结束，触发相关事件
-        beatManager?.StopBeatCheckAction?.Invoke();
     }
 
     private void PlayGoodBeat(BeatResult beatResult)

@@ -157,7 +157,7 @@ public class GirlController : MonoBehaviour
     void Update()
     {
         GirlRootStateMachine.OnLogic();
-        //Debug.Log($"当前状态：{GirlRootStateMachine.GetActiveHierarchyPath()}");
+       // Debug.Log($"当前状态：{GirlRootStateMachine.GetActiveHierarchyPath()}");
     }
 
     void OnDisable()
@@ -253,6 +253,9 @@ public class GirlController : MonoBehaviour
         GirlRootStateMachine.AddTransition(GirlStateType.SpecialAttackMachine, GirlStateType.WaitingInput, 
                                             t => moveDirection != Vector3.zero && 
                                             SpecialAttackStateMachine.ActiveStateName == LandAttackType.SpecialAttack_End, forceInstantly: true);
+        GirlRootStateMachine.AddTransition(GirlStateType.SpecialAttackMachine, GirlStateType.WaitingInput, 
+                                            t => SpecialAttackStateMachine.ActiveStateName == LandAttackType.SpecialAttack_End
+                                                && !girlData.GetIsLandAttacking, forceInstantly: true);
 
         //眩晕状态切换
         GirlRootStateMachine.AddTransition(GirlStateType.Dizziness, GirlStateType.WaitingInput, t => !girlData.IsDizziness);
@@ -308,7 +311,8 @@ public class GirlController : MonoBehaviour
                                                                                                 girlData, animator, 
                                                                                                 Animator.StringToHash(Attack1WorkingAnimName), 
                                                                                                 LandAttackCollider,
-                                                                                                this, Attack1AudioClip));
+                                                                                                this, Attack1AudioClip,
+                                                                                                LandAttack1Radius.GetRadius, LandAttack1MaxMoveDistanceRadius.GetRadius));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack1_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack1EndAnimName), 1f));
     
@@ -321,7 +325,8 @@ public class GirlController : MonoBehaviour
                                                                             girlData, animator, 
                                                                             Animator.StringToHash(Attack2WorkingAnimName), 
                                                                             LandAttackCollider,
-                                                                            this, Attack2AudioClip));
+                                                                            this, Attack2AudioClip,
+                                                                            LandAttack2Radius.GetRadius, LandAttack2MaxMoveDistanceRadius.GetRadius));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack2_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack2EndAnimName), 1f));
 
@@ -341,7 +346,8 @@ public class GirlController : MonoBehaviour
                                                                                                 girlData, animator, 
                                                                                                 Animator.StringToHash(Attack3WorkingAnimName), 
                                                                                                 LandAttackCollider,
-                                                                                                this, Attack3AudioClip));
+                                                                                                this, Attack3AudioClip,
+                                                                                                LandAttack3Radius.GetRadius, LandAttack3MaxMoveDistanceRadius.GetRadius));
         LandAttackStateMachine.AddState(LandAttackType.LandAttack3_End, new LandAttack_End(girlData, animator, 
                                                                     Animator.StringToHash(Attack3EndAnimName), 1f));     
 
@@ -438,11 +444,13 @@ public class GirlController : MonoBehaviour
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part1, new LandAttack_Attack(LandAttackType.SpecialAttack_Part1, 
                                                                     LandAttackType.LandAttack1_Attack, girlData, animator, 
                                                                     Animator.StringToHash(Part1_SpecialAttackAnimName), 
-                                                                    LandAttackCollider, this, Part1_SpecialAttackAudioClip));
+                                                                    LandAttackCollider, this, Part1_SpecialAttackAudioClip,
+                                                                    Part1_SpecialAttackRadius.GetRadius, SpecialAttackMaxMoveDistanceRadius.GetRadius));
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_Part2, new LandAttack_Attack(LandAttackType.SpecialAttack_Part2,
                                                                     LandAttackType.LandAttack1_Attack, girlData, animator, 
                                                                     Animator.StringToHash(Part2_SpecialAttackAnimName), 
-                                                                    LandAttackCollider, this, Part2_SpecialAttackAudioClip));
+                                                                    LandAttackCollider, this, Part2_SpecialAttackAudioClip,
+                                                                    Part2_SpecialAttackRadius.GetRadius, SpecialAttackMaxMoveDistanceRadius.GetRadius));
         SpecialAttackStateMachine.AddState(LandAttackType.SpecialAttack_End, new LandAttack_End(girlData, animator, Animator.StringToHash(SpecialAttackEndAnimName), 1f));
 
         //进入转换

@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class LandDodge_Girl : CharacterState<GirlStateType>
@@ -66,6 +67,11 @@ public class LandDodge_Girl : CharacterState<GirlStateType>
 
         if (dodgeDirection != Vector3.zero)
         {
+            // 转换闪避方向到摄像机坐标系
+            CinemachineCamera defaultCamera = CameraManager.Instance.GetDefaultCamera;
+            Vector3 CamForward = Vector3.Scale(defaultCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
+            dodgeDirection = (dodgeDirection.z * CamForward + dodgeDirection.x * defaultCamera.transform.right).normalized;
+
             character.transform.rotation = Quaternion.LookRotation(dodgeDirection);
             animator.Play(Dodge_Front_Hash);
             currentDodgeAnimHash = Dodge_Front_Hash;

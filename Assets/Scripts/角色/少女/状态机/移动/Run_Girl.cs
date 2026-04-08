@@ -36,7 +36,19 @@ public class Run_Girl : CharacterState<GirlStateType>
 
         Vector3 rawInput = inputManager.GetMoveDirection; 
 
-        Camera mainCam = Camera.main;
+        Vector3 CamForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
+        
+
+        Vector3 Move = (rawInput.z * CamForward + rawInput.x * Camera.main.transform.right).normalized * moveSpeed * Time.deltaTime;
+        
+        character.Move(Move);
+
+        character.transform.rotation = Quaternion.Slerp(
+            character.transform.rotation,
+            Quaternion.LookRotation(Move),
+            rotateSpeed * Time.deltaTime);
+
+      /*  Camera mainCam = Camera.main;
         if (mainCam == null) return;
 
         Transform camTransform = mainCam.transform;
@@ -68,7 +80,7 @@ public class Run_Girl : CharacterState<GirlStateType>
                 rotateSpeed * Time.deltaTime);
 
             lastMoveDirection = moveDir;
-        }
+        }*/
     }
 
 

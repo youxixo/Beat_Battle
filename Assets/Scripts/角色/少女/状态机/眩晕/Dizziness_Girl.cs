@@ -25,6 +25,8 @@ public class Dizziness_Girl : CharacterState<GirlStateType>
         girlData.SetDodgeInputWindow(false);
         girlData.SetMoveInputWindow(false);
 
+        dataCollectionManager.DizzinessTriggerCount++;
+
         animator.Play(DizzinessHash);
         coroutineManager.Run("DizzinessDuration", DizzinessDuration());
     }

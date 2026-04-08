@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 public class InputController : MonoBehaviour
 {
     private InputManager inputManager => InputManager.Instance;
+    private CameraManager cameraManager => CameraManager.Instance;
+    private CoroutineManager coroutineManager => CoroutineManager.Instance;
 
     /// <summary>
     /// 移动输入回调函数，当玩家按下或释放WASD键时调用，更新InputManager中的移动方向。
@@ -88,6 +90,51 @@ public class InputController : MonoBehaviour
         if (context.performed)
         {
             inputManager.InteractEvent?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// 相机顺时针旋转
+    /// </summary>
+    public void OnCameraRotateClockwise(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            coroutineManager.Run("CameraRotate", cameraManager.RotateCameraClockwise());
+        }
+        else if (context.canceled)
+        {
+            coroutineManager.Stop("CameraRotate");
+        }
+    }
+
+    /// <summary>
+    /// 相机逆时针旋转
+    /// </summary>
+    public void OnCameraRotateCounterClockwise(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            coroutineManager.Run("CameraRotate", cameraManager.RotateCameraCounterClockwise());
+        }
+        else if (context.canceled)
+        {
+            coroutineManager.Stop("CameraRotate");
+        }
+    }
+
+    /// <summary>
+    /// 鼠标控制相机旋转
+    /// </summary>
+    public void OnMouseControlCameraRotation(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            coroutineManager.Run("CameraRotate", cameraManager.MouseControlCameraRotation());
+        }
+        else if (context.canceled)
+        {
+            coroutineManager.Stop("CameraRotate");
         }
     }
 }

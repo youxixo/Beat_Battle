@@ -12,13 +12,13 @@ public class SettleShowValue_LandAttack : CharacterState<LandAttackType>
     {
         base.OnEnter();
         
-        int jumpvalue = girlData.GetDodgeValue;
+        int DodgeValue = girlData.GetDodgeValue;
 
-        if(jumpvalue >= 2)
+        if(DodgeValue >= 2)
         {
             girlData.CurrentShowValue += 3;
         }
-        else if(jumpvalue == 1)
+        else if(DodgeValue == 1)
         {
             girlData.CurrentShowValue += 2;
         }
@@ -28,5 +28,7 @@ public class SettleShowValue_LandAttack : CharacterState<LandAttackType>
         }
         
         girlData.SetDodgeValue(0);
+        
+        dataCollectionManager.Attack3TriggerCount++;
     }
 }

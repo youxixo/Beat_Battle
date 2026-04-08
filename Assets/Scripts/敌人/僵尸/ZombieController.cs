@@ -38,6 +38,8 @@ public class ZombieController : MonoBehaviour
         }
         AttackCooldownTimer = timerManager.Create_DownTimer("Zombie_Attack_Cooldown" + gameObject.GetInstanceID());
 
+
+        zombieDate.SetCurrentMoveSpeed(zombieDate.InitialMoveSpeed);
         Build_ZombieStateMachine(); 
     }
 
@@ -51,6 +53,7 @@ public class ZombieController : MonoBehaviour
     void Update()
     {
         zombieStateMachine.OnLogic();
+        //Debug.Log($"当前状态: {zombieStateMachine.GetActiveHierarchyPath()}");
     }
 
     void OnDisable()
@@ -91,7 +94,7 @@ public class ZombieController : MonoBehaviour
         // Attack -> Idle
         zombieStateMachine.AddTransition(ZombieType.Attack, ZombieType.Idle);
 
-        zombieStateMachine.AddTransitionFromAny(ZombieType.Die, t => zombieDate.IsDead);
+        zombieStateMachine.AddTransitionFromAny(ZombieType.Die, t => zombieDate.IsDead, forceInstantly: true);
 
         zombieStateMachine.SetStartState(ZombieType.Idle);
     }
@@ -108,18 +111,17 @@ public class ZombieController : MonoBehaviour
         return distanceToPlayer <= zombieDate.AttackRange;
     }
 
-    private float cacheMoveSpeed;
     private void Stop()
     {
         animator.speed = 0.3f;
-        cacheMoveSpeed= zombieDate.MoveSpeed;
-        zombieDate.SetMoveSpeed(0.1f);
+        zombieDate.SetCurrentMoveSpeed(0.1f);
     }
 
     private void Resume()
     {
         animator.speed = 1;
-        zombieDate.SetMoveSpeed(cacheMoveSpeed);
+
+        zombieDate.SetCurrentMoveSpeed(zombieDate.InitialMoveSpeed);
     }
 
     /// <summary>
@@ -130,14 +132,23 @@ public class ZombieController : MonoBehaviour
     {
         if (other.CompareTag("PlayerHitBox"))
         {
-            bool isAttack3 = characterManager.GetCurrentCharacterData.GetCurrentLandAttackType == LandAttackType.LandAttack3_Attack;
-            if(isAttack3)
+            LandAttackType currentLandAttackType = characterManager.GetCurrentCharacterData.GetCurrentLandAttackType;
+            if(currentLandAttackType == LandAttackType.LandAttack3_Attack)
             {
-                zombieDate.TakeDamage(5);
+                zombieDate.TakeDamage(3);
+                return;
             }
-            else
+            else if(currentLandAttackType == LandAttackType.LandAttack1_Attack || currentLandAttackType == LandAttackType.LandAttack2_Attack)
             {
                 zombieDate.TakeDamage(1);
+                return;
+            }
+
+            //特殊攻击
+            if(currentLandAttackType == LandAttackType.SpecialAttack_Part1 || currentLandAttackType == LandAttackType.SpecialAttack_Part2)
+            {
+                zombieDate.TakeDamage(5);
+                return;
             }
         }
     }

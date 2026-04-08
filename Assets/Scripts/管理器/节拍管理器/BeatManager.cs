@@ -83,6 +83,7 @@ public class BeatManager : Singleton<BeatManager>
             
             if(currentBeatCheckType == BeatCheckType.JBeatCheck)
             {
+                StopBeatCheckAction?.Invoke();
                 CurrentBeatResult = jBeatCheckResult;
             }
         }
@@ -116,6 +117,7 @@ public class BeatManager : Singleton<BeatManager>
             }
             if(currentBeatCheckType == BeatCheckType.KBeatCheck)
             {
+                StopBeatCheckAction?.Invoke();
                 CurrentBeatResult = kBeatCheckResult;
             }
         }
@@ -143,6 +145,7 @@ public class BeatManager : Singleton<BeatManager>
     /// </summary>
     public void StartBeatCheck(BeatCheckType BeackTypr)
     {
+        StartBeatCheckAction?.Invoke();   
         if(CharacterReadyForBeatCheck)
         {
             CurrentBeatResult = BeatResult.none;
@@ -159,6 +162,7 @@ public class BeatManager : Singleton<BeatManager>
                     KBeatStartCheckAction?.Invoke();
                     break;
             }
+
         }
     }
     
@@ -171,6 +175,8 @@ public class BeatManager : Singleton<BeatManager>
     {
         if(CharacterReadyForBeatCheck)
         {
+            StartBeatCheckAction?.Invoke();
+
             currentBeatCheckType = BeatCheckType.BothCheck;
             JBeatCheckResult = BeatResult.none;
             KBeatCheckResult = BeatResult.none;
@@ -187,6 +193,7 @@ public class BeatManager : Singleton<BeatManager>
     {
         yield return new WaitUntil(() => JBeatCheckResult != BeatResult.none && KBeatCheckResult != BeatResult.none);
 
+        StopBeatCheckAction?.Invoke();
         if(JBeatCheckResult == BeatResult.Good && KBeatCheckResult == BeatResult.Good)
         {
             CurrentBeatResult = BeatResult.Good;
@@ -197,6 +204,7 @@ public class BeatManager : Singleton<BeatManager>
             CurrentBeatResult = BeatResult.Miss;
             BothBeatCheckResultAction?.Invoke(BeatResult.Miss);
         }
+        
     }
 
     #endregion

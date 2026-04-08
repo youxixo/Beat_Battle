@@ -33,11 +33,27 @@ public class ZombieDate : MonoBehaviour
     {
         canMove = CanMove;
     }
-    [SerializeField] private float moveSpeed = 2f;
-    public float MoveSpeed => moveSpeed;
-    public void SetMoveSpeed(float MoveSpeed)
+
+    [SerializeField, ChineseLabel("初始移动速度")] private float initialMoveSpeed = 2f;
+
+    /// <summary>
+    /// 初始移动速度
+    /// </summary>
+    public float InitialMoveSpeed => initialMoveSpeed;
+
+    [SerializeField, ChineseLabel("当前移动速度")] private float currentMoveSpeed = 2f;
+
+    /// <summary>
+    /// 当前移动速度
+    /// </summary>
+    public float CurrentMoveSpeed => currentMoveSpeed;
+
+    /// <summary>
+    /// 设置当前移动速度
+    /// </summary>
+    public void SetCurrentMoveSpeed(float MoveSpeed)
     {
-        moveSpeed = MoveSpeed;
+        currentMoveSpeed = MoveSpeed;
     }
 
     [Header("攻击冷却")]

@@ -43,6 +43,6 @@ public class Jump_Down_Girl: CharacterState<GirlStateType>
             moveInput.y * girlData.GetMoveSpeed
         );
 
-        character.Move(velocity * Time.deltaTime);
+        character?.Move(velocity * Time.deltaTime);
     }
 }

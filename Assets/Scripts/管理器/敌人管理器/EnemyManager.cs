@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+using AYellowpaper.SerializedCollections;
 using UnityEngine;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-    private Dictionary<int, ZombieDate> enemyDict = new Dictionary<int, ZombieDate>();
+    [SerializeField,SerializedDictionary("Enemy ID", "Enemy Data")]
+    private SerializedDictionary<int, ZombieDate> enemyDict = new SerializedDictionary<int, ZombieDate>();
     public int EnemyCount => enemyDict.Count;
 
     [SerializeField] private Transform CurrentTargetEnemy;
@@ -57,6 +58,27 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             enemyDict.Remove(enemy.gameObject.GetInstanceID());
         }
+    }
+
+    ///<summary>
+    /// 清空敌人字典
+    /// </summary>
+    public void ClearEnemies()
+    {
+        enemyDict.Clear();
+        CurrentTargetEnemy = null;
+    }
+
+    /// <summary>
+    /// 获取特定敌人
+    /// </summary>
+    public ZombieDate GetEnemy(int instanceID)
+    {
+        if (enemyDict.TryGetValue(instanceID, out ZombieDate enemy))
+        {
+            return enemy;
+        }
+        return null;
     }
 
     /// <summary>

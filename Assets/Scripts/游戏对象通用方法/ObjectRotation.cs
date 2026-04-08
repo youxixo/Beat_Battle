@@ -12,18 +12,18 @@ public static class ObjectRotation
     {
          Vector2 direction = targetPosition - (Vector2)SelfTransform.position;
 
-    if (direction.sqrMagnitude < 0.0001f)
-        return;
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
 
-    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-    Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
-    SelfTransform.rotation = Quaternion.RotateTowards(
-        SelfTransform.rotation,
-        targetRotation,
-        rotationSpeed * Time.deltaTime
-    );
+        SelfTransform.rotation = Quaternion.RotateTowards(
+            SelfTransform.rotation,
+            targetRotation,
+            rotationSpeed * Time.deltaTime
+        );
     }
 
     /// <summary>
