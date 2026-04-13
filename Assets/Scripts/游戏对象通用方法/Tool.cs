@@ -27,4 +27,19 @@ public static class Tool
             return Vector3.Cross(forward, toTarget).y < 0; // 目标在右侧
         }
     }
+
+    public static bool NewIsLeft(Vector3 targetPos, Vector3 currentPos, Vector3 forward)
+    {
+        // 1. 获取从当前位置指向目标的向量
+        Vector3 toTarget = targetPos - currentPos;
+
+        // 2. 计算 forward 和 toTarget 的叉乘
+        // 在 Unity (左手坐标系) 中：
+        // 如果 Cross.y > 0，目标在右侧
+        // 如果 Cross.y < 0，目标在左侧
+        Vector3 cross = Vector3.Cross(forward, toTarget);
+
+        // 返回是否在左侧
+        return cross.y < 0;
+    }
 }
